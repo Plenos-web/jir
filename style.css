@@ -1464,6 +1464,11 @@ tfoot#bnr-rekap-foot td { padding: 10px; font-weight:900; font-family:var(--mono
   border-radius: 6px;
 }
 
+/* Label di dalam <td> hanya untuk tampilan mobile (lihat @media 640px) */
+#hpp-table tbody td label {
+  display: none;
+}
+
 /* ── Mobile: Calculator Tables ── */
 @media (max-width: 640px) {
   #bnr-preview {
@@ -1544,6 +1549,7 @@ tfoot#bnr-rekap-foot td { padding: 10px; font-weight:900; font-family:var(--mono
   }
   
   #hpp-table tbody td label {
+    display: block;
     font-size: 11px;
     color: var(--tx3);
     font-weight: 700;
