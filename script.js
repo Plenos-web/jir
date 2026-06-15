@@ -569,11 +569,11 @@ function buildSidebar(role){
   // Sidebar footer
   html += '<div style="margin-top:auto; padding-top:24px; border-top:1px solid var(--bdr); margin-left:-4px; margin-right:-4px; padding-left:12px; padding-right:12px;">' +
     '<div style="display:flex;align-items:center;gap:8px; padding:10px 12px; border-radius:10px; background:var(--blue-l);">' +
-    '<div style="width:28px;height:28px;background:linear-gradient(135deg,#2563EB,#7C3AED);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
+    '<div style="width:28px;height:28px;background:#2563EB;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
     '<svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
     '</div>' +
     '<div><div style="font-size:11px;font-weight:800;color:var(--blue-d);">Abunawas POS</div>' +
-    '<div style="font-size:10px;color:var(--tx3); font-weight:600;">v3.0 ✦ AI Powered</div></div>' +
+    '<div style="font-size:10px;color:var(--tx3); font-weight:600;">v3.0</div></div>' +
     '</div></div>';
   document.getElementById('sb-content').innerHTML=html;
 }
@@ -4691,7 +4691,7 @@ function kirimWANotaAwal() {
 }
 
 /* Produksi filter buttons */
-.produksi-filter.btn-blue { background: linear-gradient(135deg,#3B82F6,#2563EB) !important; color:#fff !important; border-color:transparent !important; }
+.produksi-filter.btn-blue { background: #2563EB !important; color:#fff !important; border-color:transparent !important; }
 
 /* Target page */
 #tg-catatan { min-height: 120px; }
