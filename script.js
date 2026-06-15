@@ -509,7 +509,7 @@ function renderKatalog() {
   for (let c in cats) {
     html += `
       <div style="margin-top:40px; margin-bottom:20px; text-align:left;">
-        <h2 style="font-size:22px; font-weight:900; color:var(--tx); display:inline-block; border-bottom:3px solid var(--saffron); padding-bottom:8px; margin-bottom:20px;">${c}</h2>
+        <h2 style="font-size:22px; font-weight:900; color:var(--tx); display:inline-block; border-bottom:3px solid var(--blue); padding-bottom:8px; margin-bottom:20px;">${c}</h2>
         <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:20px;">
     `;
     cats[c].forEach(b => {
@@ -3701,7 +3701,7 @@ function renderBossWidgets(strToday, strMonth) {
     '</div>';
 }
 function _bw(ico, lbl, val, col) {
-  return '<div class="card" style="padding:12px 14px;margin:0;border-top:3px solid var(--saffron);">'+
+  return '<div class="card" style="padding:12px 14px;margin:0;border-top:3px solid '+col+';">'+
     '<div style="font-size:16px;margin-bottom:3px;">'+ico+'</div>'+
     '<div style="font-size:10px;font-weight:700;color:var(--tx3);margin-bottom:2px;">'+lbl+'</div>'+
     '<div style="font-size:14px;font-weight:900;color:'+col+';font-family:var(--mono);">'+val+'</div>'+
@@ -4579,7 +4579,7 @@ function bukaTemplateModa() {
   if(!listEl || !prevEl) return;
   listEl.innerHTML = Object.entries(NOTA_TEMPLATES).map(function(entry) {
     var key = entry[0], tpl = entry[1];
-    return '<div onclick="pilihTemplate(\'' + key + '\')" style="cursor:pointer;padding:12px 14px;border:2px solid var(--bdr);border-radius:10px;transition:all 0.18s;" onmouseover="this.style.borderColor=\'var(--saffron)\'" onmouseout="this.style.borderColor=\'var(--bdr)\'" id="tpl-opt-' + key + '">' +
+    return '<div onclick="pilihTemplate(\'' + key + '\')" style="cursor:pointer;padding:12px 14px;border:2px solid var(--bdr);border-radius:10px;transition:all 0.18s;" onmouseover="this.style.borderColor=\'var(--blue)\'" onmouseout="this.style.borderColor=\'var(--bdr)\'" id="tpl-opt-' + key + '">' +
       '<div style="font-weight:800;font-size:13px;">' + tpl.label + '</div>' +
       '<div style="font-size:11px;color:var(--tx2);margin-top:2px;">' + tpl.desc + '</div>' +
     '</div>';
@@ -4596,7 +4596,7 @@ function pilihTemplate(key) {
     el.style.background = 'transparent';
   });
   var opt = document.getElementById('tpl-opt-' + key);
-  if(opt) { opt.style.borderColor = 'var(--saffron)'; opt.style.background = 'var(--saffron-l)'; }
+  if(opt) { opt.style.borderColor = 'var(--blue)'; opt.style.background = 'var(--blue-l)'; }
   var prev = document.getElementById('template-preview');
   if(prev && notaForWA && NOTA_TEMPLATES[key]) {
     prev.value = NOTA_TEMPLATES[key].build(notaForWA);
@@ -4709,7 +4709,7 @@ function kirimWANotaAwal() {
 }
 
 /* Produksi filter buttons */
-.produksi-filter.btn-blue { background: var(--saffron) !important; color: var(--ink) !important; border-color:transparent !important; }
+.produksi-filter.btn-blue { background: linear-gradient(135deg,#3B82F6,#2563EB) !important; color:#fff !important; border-color:transparent !important; }
 
 /* Target page */
 #tg-catatan { min-height: 120px; }
