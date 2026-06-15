@@ -921,14 +921,19 @@ function renderCharts(fTrx){
     var hasData = realOmzet.some(v=>v>0);
     var chartColors = getComputedStyle(document.documentElement);
 
+    var cs = getComputedStyle(document.documentElement);
+    var txColor = cs.getPropertyValue('--tx').trim() || '#1A1A2E';
+    var tx2Color = cs.getPropertyValue('--tx2').trim() || '#4A5568';
+    var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    var gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(26,26,46,0.06)';
     bChart=new Chart(c1,{type:'bar',data:{labels:labels7,datasets:[
-      {label:'Omzet',data:realOmzet,backgroundColor:'rgba(59,130,246,0.7)',borderRadius:6,barPercentage:.6},
-      {label:'Modal', data:realModal,backgroundColor:'rgba(16,185,129,0.6)',borderRadius:6,barPercentage:.6}
-    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11},boxWidth:12,color:chartColors.getPropertyValue('--tx')}}},scales:{x:{grid:{display:false},ticks:{color:chartColors.getPropertyValue('--tx2')}},y:{ticks:{color:chartColors.getPropertyValue('--tx2'),callback:function(v){return v>=1000000?'Rp '+(v/1000000).toFixed(1)+'jt':v>=1000?'Rp '+(v/1000).toFixed(0)+'rb':'Rp '+v;}},grid:{color:'rgba(100,100,100,0.08)'}}}}});
+      {label:'Omzet',data:realOmzet,backgroundColor:'rgba(232,163,23,0.85)',borderRadius:8,borderRadiusTopLeft:8,borderRadiusTopRight:8,barPercentage:.55,borderSkipped:false},
+      {label:'Modal',data:realModal,backgroundColor:'rgba(45,106,79,0.7)',borderRadius:8,borderSkipped:false,barPercentage:.55}
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11,family:"'Inter',sans-serif"},boxWidth:10,boxHeight:10,padding:16,color:txColor,usePointStyle:true,pointStyle:'circle'}}},scales:{x:{grid:{display:false},border:{display:false},ticks:{color:tx2Color,font:{size:11}}},y:{ticks:{color:tx2Color,font:{size:11},callback:function(v){return v>=1000000?'Rp '+(v/1000000).toFixed(1)+'jt':v>=1000?'Rp '+(v/1000).toFixed(0)+'rb':'Rp '+v;}},grid:{color:gridColor},border:{display:false}}}}});
     
     var lunas = fTrx.filter(t=>t.bayar==='Lunas').length; var dp = fTrx.filter(t=>t.bayar==='DP').length; var hutang = fTrx.filter(t=>t.bayar==='Hutang').length;
     if(fTrx.length===0){ lunas=1; dp=0; hutang=0; } 
-    pChart=new Chart(c2,{type:'doughnut',data:{labels:['Lunas','Titip Uang','Belum Lunas'],datasets:[{data:[lunas,dp,hutang],backgroundColor:['#34D399','#FBBF24','#F87171'],borderWidth:0,hoverOffset:5}]},options:{responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:12,padding:10,color:chartColors.getPropertyValue('--tx')}}}}});
+    pChart=new Chart(c2,{type:'doughnut',data:{labels:['Lunas','Titip Uang','Belum Lunas'],datasets:[{data:[lunas,dp,hutang],backgroundColor:['#2D6A4F','#E8A317','#C0392B'],borderWidth:0,hoverOffset:8,spacing:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'bottom',labels:{font:{size:11,family:"'Inter',sans-serif"},boxWidth:10,boxHeight:10,padding:14,usePointStyle:true,pointStyle:'circle',color:txColor}}}}});
   }catch(e){console.error('Chart error:',e);}
 }
 
@@ -3840,14 +3845,17 @@ function renderGrafikLaporan() {
     var omzetData = days.map(d => trx.filter(t=>t.tgl===d).reduce((s,t)=>s+t.total,0));
     var pengData  = days.map(d => peng.filter(p=>p.tgl===d).reduce((s,p)=>s+(p.total||0),0));
     if (elBar._chart) elBar._chart.destroy();
+    var cs2=getComputedStyle(document.documentElement);var tx2c=cs2.getPropertyValue('--tx').trim()||'#1A1A2E';var tx3c=cs2.getPropertyValue('--tx2').trim()||'#4A5568';var isDk=document.documentElement.getAttribute('data-theme')==='dark';var gc=isDk?'rgba(255,255,255,0.05)':'rgba(26,26,46,0.06)';
     elBar._chart = new Chart(elBar.getContext('2d'), {
       type:'bar',
       data:{ labels, datasets:[
-        { label:'Omzet', data:omzetData, backgroundColor:'rgba(59,130,246,0.7)', borderRadius:6 },
-        { label:'Pengeluaran', data:pengData, backgroundColor:'rgba(245,158,11,0.7)', borderRadius:6 }
+        { label:'Omzet', data:omzetData, backgroundColor:'rgba(232,163,23,0.85)', borderRadius:8, borderSkipped:false, barPercentage:0.55 },
+        { label:'Pengeluaran', data:pengData, backgroundColor:'rgba(192,57,43,0.7)', borderRadius:8, borderSkipped:false, barPercentage:0.55 }
       ]},
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{position:'top'} },
-        scales:{ y:{ ticks:{ callback: v=>'Rp '+fmt(v) } } } }
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{position:'top',labels:{font:{size:11,family:"'Inter',sans-serif"},usePointStyle:true,pointStyle:'circle',boxWidth:10,boxHeight:10,color:tx2c}} },
+        scales:{ x:{grid:{display:false},border:{display:false},ticks:{color:tx3c,font:{size:11}}}, y:{grid:{color:gc},border:{display:false},ticks:{color:tx3c,font:{size:11},callback:v=>'Rp '+fmt(v)}} }
+      }
     });
   }
 
@@ -3858,13 +3866,17 @@ function renderGrafikLaporan() {
     trx.forEach(t=>(t.items||[]).forEach(i=>{ pmap[i.barang]=(pmap[i.barang]||0)+i.total; }));
     var sorted = Object.entries(pmap).sort((a,b)=>b[1]-a[1]).slice(0,5);
     if (elPie._chart) elPie._chart.destroy();
+    var cs3=getComputedStyle(document.documentElement);var tx4c=cs3.getPropertyValue('--tx').trim()||'#1A1A2E';
     elPie._chart = new Chart(elPie.getContext('2d'), {
       type:'doughnut',
       data:{ labels:sorted.map(e=>e[0]), datasets:[{
         data:sorted.map(e=>e[1]),
-        backgroundColor:['#3B82F6','#10B981','#F59E0B','#8B5CF6','#EF4444']
+        backgroundColor:['#E8A317','#2D6A4F','#7B2FBE','#C0392B','#2563EB'],
+        borderWidth:0, spacing:3, hoverOffset:8
       }]},
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{position:'right'} } }
+      options:{ responsive:true, maintainAspectRatio:false, cutout:'62%',
+        plugins:{ legend:{position:'right', labels:{font:{size:11,family:"'Inter',sans-serif"},usePointStyle:true,pointStyle:'circle',boxWidth:10,boxHeight:10,color:tx4c,padding:12}} }
+      }
     });
   }
 
@@ -3879,14 +3891,20 @@ function renderGrafikLaporan() {
       return o-p;
     });
     if (elLine._chart) elLine._chart.destroy();
+    var cs5=getComputedStyle(document.documentElement);var tx5c=cs5.getPropertyValue('--tx').trim()||'#1A1A2E';var tx6c=cs5.getPropertyValue('--tx2').trim()||'#4A5568';var isDk2=document.documentElement.getAttribute('data-theme')==='dark';var gc2=isDk2?'rgba(255,255,255,0.05)':'rgba(26,26,46,0.06)';
     elLine._chart = new Chart(elLine.getContext('2d'), {
       type:'line',
-      data:{ labels:labels7, datasets:[{ label:'Profit', data:profitData,
-        borderColor:'#10B981', backgroundColor:'rgba(16,185,129,0.1)',
-        borderWidth:2, fill:true, tension:0.4, pointRadius:4
+      data:{ labels:labels7, datasets:[{ label:'Profit Harian', data:profitData,
+        borderColor:'#E8A317',
+        backgroundColor: isDk2 ? 'rgba(232,163,23,0.08)' : 'rgba(232,163,23,0.12)',
+        borderWidth:2.5, fill:true, tension:0.42,
+        pointRadius:5, pointBackgroundColor:'#E8A317', pointBorderColor:'#fff',
+        pointBorderWidth:2, pointHoverRadius:7
       }]},
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top'}},
-        scales:{ y:{ ticks:{ callback:v=>'Rp '+fmt(v) } } } }
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{position:'top',labels:{font:{size:11,family:"'Inter',sans-serif"},usePointStyle:true,pointStyle:'circle',color:tx5c}}},
+        scales:{ x:{grid:{display:false},border:{display:false},ticks:{color:tx6c,font:{size:11}}}, y:{grid:{color:gc2},border:{display:false},ticks:{color:tx6c,font:{size:11},callback:v=>'Rp '+fmt(v)}} }
+      }
     });
   }
 }
