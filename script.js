@@ -173,7 +173,7 @@ var MENUS = {
     {id:'produksi',label:'🏭 Produksi',ico:'calc'},
     {id:'target',label:'🎯 Target & Catatan Boss',ico:'chart'},
     {sec:'AI & Tools'},
-    {id:'aiadvisor',label:'🤖 AI Advisor',ico:'ai'},
+    {id:'aiadvisor',label:'Advisor Keuangan',ico:'ai'},
     {id:'ocr',label:'📸 Foto Nota (OCR)',ico:'camera'},
     {id:'voice',label:'🎙️ Voice Input',ico:'mic'},
     {id:'skor',label:'💯 Skor Finansial',ico:'chart'},
@@ -408,7 +408,7 @@ async function prosesAIPesanan() {
   }
   let txtAreaId = 'ai-input-text'; let text = document.getElementById(txtAreaId).value.trim();
   if(!text) { toast("Silakan ketik detail pesanan di kolom teks terlebih dahulu!", 3000); return; }
-  toast("✨ AI sedang memecah pesanan dan menghitung ukuran...", 3000);
+  toast("Memproses pesanan...", 3000);
   document.getElementById('ai-btn-extract').textContent = '⏳ Memproses...'; document.getElementById('ai-btn-extract').disabled = true;
 
   let today = nowDate(); let listBarang = BARANG.map(b => b.kode + " - " + b.nama).join(", ");
@@ -445,16 +445,16 @@ async function prosesAIPesanan() {
             CART.push({ kode: finalKode, barang: finalName, qty: i.qty || 1, harga: harga, total: harga * (i.qty || 1), modal: (b ? b.modal : 0) * (i.qty || 1) });
         });
     }
-    renderCart(); toast("✨ Ekstraksi pesanan keranjang oleh AI selesai!", 2500); document.getElementById(txtAreaId).value = '';
+    renderCart(); toast("Pesanan berhasil diproses!", 2500); document.getElementById(txtAreaId).value = '';
   } catch (err) { console.error(err); toast("Maaf, AI gagal memproses data.", 3000);
-  } finally { document.getElementById('ai-btn-extract').textContent = '✨ Ekstrak Pesanan'; document.getElementById('ai-btn-extract').disabled = false; }
+  } finally { document.getElementById('ai-btn-extract').textContent = 'Ekstrak Pesanan'; document.getElementById('ai-btn-extract').disabled = false; }
 }
 
 // AI UNTUK BOSS (PENGELUARAN/BELANJA VENDOR)
 async function prosesAIPengeluaran() {
   let text = document.getElementById('ai-peng-text').value.trim();
   if(!text) { toast("Silakan ketik detail belanja/pengeluaran di kolom teks!", 3000); return; }
-  toast("✨ AI sedang memecah nota belanja Anda...", 3000);
+  toast("Memproses nota belanja...", 3000);
   let btn = document.getElementById('ai-btn-peng'); btn.textContent = '⏳ Memproses...'; btn.disabled = true;
   let listVendors = VENDORS.map(v => v.nama).join(", ");
   
@@ -481,13 +481,13 @@ async function prosesAIPengeluaran() {
         if(r) { r.checked = true; toggleDPMv(); }
     }
 
-    toast("✨ Ekstraksi data belanja selesai!", 2500); document.getElementById('ai-peng-text').value = '';
+    toast("Data belanja berhasil diproses!", 2500); document.getElementById('ai-peng-text').value = '';
   } catch (err) { console.error(err); toast("Maaf, AI gagal memproses data kulakan.", 3000);
-  } finally { btn.textContent = '✨ Ekstrak Belanja'; btn.disabled = false; }
+  } finally { btn.textContent = 'Ekstrak Belanja'; btn.disabled = false; }
 }
 
 async function waReminderAI(wa, nama, sisaTagihan) {
-  toast("✨ AI sedang merangkai pesan penagihan...", 2500);
+  toast("Menyiapkan pesan penagihan...", 2500);
   let prompt = `Buatkan 1 draf pesan WhatsApp penagihan sangat ramah untuk bisnis Abunawas Percetakan. Nomor kontak Kasir (${curUser.wa}). Data Pelanggan: ${nama}. Sisa Tagihan Belum Lunas: Rp ${sisaTagihan.toLocaleString('id-ID')}. Tambahkan emoji.`;
   try {
     let res = await fetchGemini(prompt, false); let msg = res.trim();
@@ -509,7 +509,7 @@ function renderKatalog() {
   for (let c in cats) {
     html += `
       <div style="margin-top:40px; margin-bottom:20px; text-align:left;">
-        <h2 style="font-size:22px; font-weight:900; color:var(--tx); display:inline-block; border-bottom:3px solid var(--blue); padding-bottom:8px; margin-bottom:20px;">${c}</h2>
+        <h2 style="font-size:22px; font-weight:900; color:var(--tx); display:inline-block; border-bottom:3px solid var(--saffron); padding-bottom:8px; margin-bottom:20px;">${c}</h2>
         <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:20px;">
     `;
     cats[c].forEach(b => {
@@ -573,7 +573,7 @@ function buildSidebar(role){
     '<svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
     '</div>' +
     '<div><div style="font-size:11px;font-weight:800;color:var(--blue-d);">Abunawas POS</div>' +
-    '<div style="font-size:10px;color:var(--tx3); font-weight:600;">v3.0 ✦ AI Powered</div></div>' +
+    '<div style="font-size:10px;color:var(--tx3); font-weight:600;">v3.0 · Percetakan & Konveksi</div></div>' +
     '</div></div>';
   document.getElementById('sb-content').innerHTML=html;
 }
@@ -1265,7 +1265,7 @@ function renderPiutang(){
   document.getElementById('piu-stats').innerHTML= sc('Jumlah Tunggakan',data.length+' transaksi','color:var(--red-d)','','color:var(--tx2)','red')+ sc('Total Piutang Mengendap',fmtRp(tot),'color:var(--red-d)','Wajib ditagih','color:var(--red)','red')+ sc('Tunggakan Terbesar',fmtRp(mx),'color:var(--amber-d)','','color:var(--tx2)','amber');
     
   var rows=data.map(t => `<tr><td style="font-weight:600;">${t.pelanggan}<br><span class="mono" style="font-weight:400; color:var(--tx2)">ID: ${t.id_cust||t.wa||'-'}</span></td><td>${t.wa}</td><td style="font-weight:800;color:var(--red)">${fmtRp(t.sisa)}</td>
-      <td><div style="display:flex; gap:6px; flex-wrap:wrap;"><button class="btn btn-green btn-xs" onclick="bukaPelunasan('${t.id}')">Lunas</button> <button class="btn btn-wa btn-xs" onclick="waReminder('${t.wa}','${t.pelanggan}',${t.sisa})">WA Standar</button> <button class="btn btn-ai btn-xs" onclick="waReminderAI('${t.wa}','${t.pelanggan}',${t.sisa})">✨ WA Pintar</button></div></td></tr>`).join('');
+      <td><div style="display:flex; gap:6px; flex-wrap:wrap;"><button class="btn btn-green btn-xs" onclick="bukaPelunasan('${t.id}')">Lunas</button> <button class="btn btn-wa btn-xs" onclick="waReminder('${t.wa}','${t.pelanggan}',${t.sisa})">WA Standar</button> <button class="btn btn-ai btn-xs" onclick="waReminderAI('${t.wa}','${t.pelanggan}',${t.sisa})">WA Pintar</button></div></td></tr>`).join('');
   document.getElementById('piu-tbl').innerHTML=`<table><thead><tr><th>Pelanggan</th><th>WhatsApp</th><th>Sisa Tagihan</th><th>Aksi Pelunasan</th></tr></thead><tbody>${rows||emptyRow(4,'🎉','Tidak ada piutang! Semua pelanggan sudah lunas.')}</tbody></table>`;
 }
 function waReminder(wa,nama,sisa){
@@ -2336,7 +2336,7 @@ function logActivity(aksi, modul, data) {
 }
 
 var CP_AKSI_ICO = {
-  CREATE:    { ico:'✦', bg:'rgba(0,255,136,0.10)' },
+  CREATE:    { ico:'＋', bg:'rgba(0,255,136,0.10)' },
   UPDATE:    { ico:'✎', bg:'rgba(0,245,255,0.10)' },
   DELETE:    { ico:'✕', bg:'rgba(255,45,120,0.10)' },
   LOGIN:     { ico:'⏻', bg:'rgba(191,0,255,0.10)' },
@@ -2807,9 +2807,9 @@ function tambahBubble(tipe, teks, isTyping) {
   var div = document.createElement('div');
   div.className = 'ai-bubble ai-bubble-' + tipe + (isTyping ? ' ai-bubble-typing' : '');
   if (tipe === 'bot') {
-    div.innerHTML = '<div class="ai-bubble-ava">🤖</div><div class="ai-bubble-msg">' + (isTyping ? '<span style="opacity:0.6">AI sedang mengetik...</span>' : teks.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')) + '</div>';
+    div.innerHTML = '<div class="ai-bubble-ava">🤖</div><div class="ai-bubble-msg">' + (isTyping ? '<span style="opacity:0.6">Sedang mengetik...</span>' : teks.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')) + '</div>';
   } else {
-    div.innerHTML = '<div class="ai-bubble-msg">' + teks + '</div><div class="ai-bubble-ava" style="background:linear-gradient(135deg,#3B82F6,#2563EB);">👤</div>';
+    div.innerHTML = '<div class="ai-bubble-msg">' + teks + '</div><div class="ai-bubble-ava" style="background:var(--saffron);">👤</div>';
   }
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
@@ -2975,7 +2975,7 @@ async function prosesVoiceTrx() {
     '{"jenis":"pemasukan atau pengeluaran","nominal":angka_saja,"ket":"keterangan singkat","metode":"Cash atau Transfer atau QRIS"}\n\n' +
     'Teks: "' + teks + '"';
 
-  document.getElementById('voice-status').textContent = '✨ AI sedang memproses...';
+  document.getElementById('voice-status').textContent = 'Memproses suara...';
   try {
     var resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + apiKey, {
       method: 'POST',
@@ -3701,7 +3701,7 @@ function renderBossWidgets(strToday, strMonth) {
     '</div>';
 }
 function _bw(ico, lbl, val, col) {
-  return '<div class="card" style="padding:12px 14px;margin:0;border-top:3px solid '+col+';">'+
+  return '<div class="card" style="padding:12px 14px;margin:0;border-top:3px solid var(--saffron);">'+
     '<div style="font-size:16px;margin-bottom:3px;">'+ico+'</div>'+
     '<div style="font-size:10px;font-weight:700;color:var(--tx3);margin-bottom:2px;">'+lbl+'</div>'+
     '<div style="font-size:14px;font-weight:900;color:'+col+';font-family:var(--mono);">'+val+'</div>'+
@@ -4579,7 +4579,7 @@ function bukaTemplateModa() {
   if(!listEl || !prevEl) return;
   listEl.innerHTML = Object.entries(NOTA_TEMPLATES).map(function(entry) {
     var key = entry[0], tpl = entry[1];
-    return '<div onclick="pilihTemplate(\'' + key + '\')" style="cursor:pointer;padding:12px 14px;border:2px solid var(--bdr);border-radius:10px;transition:all 0.18s;" onmouseover="this.style.borderColor=\'var(--blue)\'" onmouseout="this.style.borderColor=\'var(--bdr)\'" id="tpl-opt-' + key + '">' +
+    return '<div onclick="pilihTemplate(\'' + key + '\')" style="cursor:pointer;padding:12px 14px;border:2px solid var(--bdr);border-radius:10px;transition:all 0.18s;" onmouseover="this.style.borderColor=\'var(--saffron)\'" onmouseout="this.style.borderColor=\'var(--bdr)\'" id="tpl-opt-' + key + '">' +
       '<div style="font-weight:800;font-size:13px;">' + tpl.label + '</div>' +
       '<div style="font-size:11px;color:var(--tx2);margin-top:2px;">' + tpl.desc + '</div>' +
     '</div>';
@@ -4596,7 +4596,7 @@ function pilihTemplate(key) {
     el.style.background = 'transparent';
   });
   var opt = document.getElementById('tpl-opt-' + key);
-  if(opt) { opt.style.borderColor = 'var(--blue)'; opt.style.background = 'var(--blue-l)'; }
+  if(opt) { opt.style.borderColor = 'var(--saffron)'; opt.style.background = 'var(--saffron-l)'; }
   var prev = document.getElementById('template-preview');
   if(prev && notaForWA && NOTA_TEMPLATES[key]) {
     prev.value = NOTA_TEMPLATES[key].build(notaForWA);
@@ -4709,7 +4709,7 @@ function kirimWANotaAwal() {
 }
 
 /* Produksi filter buttons */
-.produksi-filter.btn-blue { background: linear-gradient(135deg,#3B82F6,#2563EB) !important; color:#fff !important; border-color:transparent !important; }
+.produksi-filter.btn-blue { background: var(--saffron) !important; color: var(--ink) !important; border-color:transparent !important; }
 
 /* Target page */
 #tg-catatan { min-height: 120px; }

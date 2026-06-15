@@ -27,6 +27,52 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <link rel="stylesheet" href="style.css">
+<style>
+/* ── Critical overrides: ensure JS-injected inline styles match new theme ── */
+
+/* Force all inline border-top colored cards to neutral */
+.card[style*="border-top"] { border-top: none !important; }
+.stat[style*="border-top"]  { border-top: none !important; }
+
+/* Topbar always dark */
+.topbar { background: #1A1A2E !important; }
+
+/* All btn-blue = saffron */
+.btn-blue, button.btn-blue { background: #D4920F !important; color: #fff !important; border-color: transparent !important; }
+.btn-blue:hover { background: #B8780A !important; }
+
+/* Sidebar active highlight */
+.sbi.on { background: rgba(212,146,15,0.10) !important; color: #8C5808 !important; box-shadow: inset 3px 0 0 #D4920F !important; }
+.sbi:hover { background: rgba(212,146,15,0.07) !important; color: #8C5808 !important; }
+
+/* JS inline blue text -> use tx */
+[style*="color:var(--blue-d)"], [style*="color: var(--blue-d)"] { color: #D4920F !important; }
+
+/* Focus ring */
+input:focus, select:focus, textarea:focus {
+  border-color: #D4920F !important;
+  box-shadow: 0 0 0 3px rgba(212,146,15,0.12) !important;
+  outline: none !important;
+}
+
+/* Dark mode stat cards — no top border */
+[data-theme="dark"] .stat { border-top: none !important; }
+
+/* Dashboard quick-recap cards — no rainbow border */
+#dash-recap-omzet .card,
+#d-stats .card,
+#dash-boss-widgets .card { border-top: none !important; border-left: none !important; }
+
+/* Prevent overflow on all pages */
+.page { overflow-x: hidden; }
+.main { overflow-x: hidden; }
+
+/* Kalkulator tab pills */
+.produksi-filter.btn-blue { background: #D4920F !important; color: #fff !important; }
+
+/* Template nota hover */
+#template-list > div:hover { border-color: #D4920F !important; background: rgba(212,146,15,0.07) !important; }
+</style>
 </head>
 <body>
 <div id="toast"></div>
@@ -125,7 +171,7 @@
     <div class="tbar-logo">
       <button class="btn-menu-mobile" onclick="toggleSidebar()"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
       <div class="tbar-mark"><svg viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></div>
-      <span>Abunawas <span style="font-weight:500; font-size:15px; color:var(--tx2);">Percetakan</span> <span style="font-size:12px;margin-left:4px;color:var(--blue);">✨AI</span></span>
+      <span>Abunawas <span style="font-weight:500; font-size:15px; color:rgba(255,255,255,0.65);">Percetakan</span></span>
     </div>
     <div class="tbar-sp"></div>
     
@@ -203,7 +249,7 @@
         </div>
 
         <div class="card ai-card" style="margin-bottom:20px;">
-          <div class="ai-title"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4L12 2z"/></svg> Asisten Input Pintar AI Gemini</div>
+          <div class="ai-title"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4L12 2z"/></svg> Asisten Input Pesanan</div>
           <p style="font-size:13px;color:var(--tx2);margin-bottom:12px;margin-top:6px;">Ketik pesanan bebas. Jika ada ukuran (misal 3x2 m), AI akan otomatis menghitung perkalian luasnya!</p>
           <textarea id="ai-input-text" class="ai-textarea" rows="2" placeholder="Cth: Budi pesan spanduk ukuran 3x2 m harga 25rb per meter, DP 50rb..."></textarea>
           <button class="btn btn-ai" id="ai-btn-extract" style="width:220px; padding:12px; font-size:14px;" onclick="prosesAIPesanan()">✨ Ekstrak Pesanan</button>
@@ -607,7 +653,7 @@
         <div class="layout-aside">
             <div class="card">
                <div class="card-t">A. Daftar Rekening Bank & E-Wallet</div>
-               <div style="font-size:12px; color:var(--tx3); margin-bottom:16px;">Rekening ini akan otomatis tercetak di Struk PDF Pelanggan.</div>
+               <div style="font-size:12px; color:var(--tx3); margin-bottom:16px;">Rekening ini digunakan untuk Info Pembayaran terpisah, bukan dicetak di Nota Customer utama.</div>
                <div id="set-rek-wrap" style="background:var(--surf2); padding:16px; border-radius:12px; border:1px solid var(--bdr); margin-bottom:16px;">
                    <!-- Injeksi JS Rekening Dinamis -->
                </div>
@@ -876,12 +922,12 @@
 
       <!-- ══════════ AI ADVISOR CHAT ══════════ -->
       <div class="page" id="pg-aiadvisor">
-        <div class="ph"><div class="pt">🤖 AI Advisor Keuangan</div><div class="ps">Tanya apa saja soal usaha & keuangan toko kamu</div></div>
+        <div class="ph"><div class="pt">Advisor Keuangan</div><div class="ps">Tanya soal omzet, pengeluaran, atau piutang</div></div>
         <div class="card" style="padding:0; overflow:hidden; display:flex; flex-direction:column; height:calc(100vh - 180px); min-height:480px;">
           <div id="ai-chat-messages" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px;">
             <div class="ai-bubble ai-bubble-bot">
               <div class="ai-bubble-ava">🤖</div>
-              <div class="ai-bubble-msg">Halo! Saya AI Advisor keuangan usaha <b>Abunawas</b>. Tanya apa aja ya — soal omzet, pengeluaran, piutang, atau saran hemat. Saya punya akses ke data transaksi toko kamu 📊</div>
+              <div class="ai-bubble-msg">Halo! Saya Advisor Keuangan usaha <b>Abunawas</b>. Tanya soal omzet, pengeluaran, piutang, atau kondisi keuangan toko — saya punya akses ke data transaksimu.</div>
             </div>
           </div>
           <div style="border-top:1px solid var(--bdr); padding:16px; display:flex; gap:10px; align-items:flex-end; background:var(--surf);">
@@ -903,7 +949,7 @@
       <div class="page" id="pg-ocr">
         <div class="ph"><div class="pt">📸 Foto Nota Vendor (OCR)</div><div class="ps">Foto struk/nota pembelian bahan → AI baca otomatis → langsung catat pengeluaran</div></div>
         <div class="card ai-card">
-          <div class="ai-title">📷 Upload atau Foto Nota</div>
+          <div class="ai-title">Upload atau Foto Nota</div>
           <p style="font-size:12px;color:var(--tx2);margin:8px 0 16px;">Foto nota pembelian kertas, tinta, banner, stiker, dll. AI akan membaca & mengisi form pengeluaran secara otomatis.</p>
           <div id="ocr-drop-zone" onclick="document.getElementById('ocr-file-input').click()" style="border:2px dashed var(--bdr);border-radius:14px;padding:40px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--surf2);">
             <div style="font-size:40px;margin-bottom:10px;">📸</div>
@@ -944,7 +990,7 @@
       <div class="page" id="pg-voice">
         <div class="ph"><div class="pt">🎙️ Voice to Transaksi</div><div class="ps">Ngomong bebas → AI ubah jadi transaksi otomatis</div></div>
         <div class="card ai-card" style="text-align:center;">
-          <div class="ai-title" style="justify-content:center;margin-bottom:16px;">🎙️ Tekan & Ngomong</div>
+          <div class="ai-title" style="justify-content:center;margin-bottom:16px;">Tekan & Ngomong</div>
           <p style="font-size:12px;color:var(--tx2);margin-bottom:24px;">Contoh: <i>"beli tinta 120 ribu cash"</i> atau <i>"order banner masuk 500 ribu qris"</i></p>
           <div id="voice-btn-wrap">
             <button id="voice-mic-btn" onclick="toggleVoiceRec()" style="width:100px;height:100px;border-radius:50%;border:none;background:linear-gradient(135deg,#3B82F6,#8B5CF6);color:#fff;font-size:36px;cursor:pointer;box-shadow:0 8px 30px rgba(59,130,246,0.4);transition:all 0.3s;margin-bottom:16px;">🎙️</button>
