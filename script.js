@@ -99,7 +99,9 @@ var MODAL_LACI = JSON.parse(localStorage.getItem('abunawas_laci')) || {};
 function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     let btn = document.getElementById('btn-theme');
-    if(btn) btn.innerHTML = theme === 'dark' ? '☀️' : '🌙';
+    if(btn) btn.innerHTML = theme === 'dark'
+      ? '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
+      : '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
     TOKO.theme = theme;
     saveDataSilent();
 }
@@ -168,21 +170,21 @@ var MENUS = {
     {id:'pelanggan',label:'Data Pelanggan',ico:'users'},
     {id:'vendor',label:'Master Vendor',ico:'vendor'},
     {id:'laporan',label:'Laporan Bisnis',ico:'chart'},
-    {id:'rekap-kasir',label:'📊 Rekap per Kasir',ico:'users'},
-    {id:'pending',label:'⏳ Order Pending',ico:'clock'},
-    {id:'produksi',label:'🏭 Produksi',ico:'calc'},
-    {id:'target',label:'🎯 Target & Catatan Boss',ico:'chart'},
+    {id:'rekap-kasir',label:'Rekap per Kasir',ico:'users'},
+    {id:'pending',label:'Order Pending',ico:'clock'},
+    {id:'produksi',label:'Produksi',ico:'calc'},
+    {id:'target',label:'Target & Catatan Boss',ico:'chart'},
     {sec:'AI & Tools'},
     {id:'aiadvisor',label:'Advisor Keuangan',ico:'ai'},
-    {id:'ocr',label:'📸 Foto Nota (OCR)',ico:'camera'},
-    {id:'voice',label:'🎙️ Voice Input',ico:'mic'},
-    {id:'skor',label:'💯 Skor Finansial',ico:'chart'},
-    {id:'tagihan',label:'🔔 Tagihan Rutin',ico:'bell'},
-    {id:'kalkulator',label:'🧮 Kalkulator Produksi',ico:'calc'},
+    {id:'ocr',label:'Foto Nota OCR',ico:'camera'},
+    {id:'voice',label:'Voice Input',ico:'mic'},
+    {id:'skor',label:'Skor Finansial',ico:'chart'},
+    {id:'tagihan',label:'Tagihan Rutin',ico:'bell'},
+    {id:'kalkulator',label:'Kalkulator Produksi',ico:'calc'},
     {sec:'Sistem & Pengaturan'},
     {id:'setting',label:'Pengaturan Toko',ico:'gear'},
     {id:'backup',label:'Backup Database',ico:'shield'},
-    {id:'audit',label:'🔐 Log Aktivitas',ico:'terminal'}
+    {id:'audit',label:'Log Aktivitas',ico:'terminal'}
   ],
   admin:[
     {sec:'Operasional'},
@@ -201,7 +203,7 @@ var MENUS = {
     {id:'pegawai',label:'Data Akun & Pegawai',ico:'users'},
     {id:'pelanggan',label:'Data Pelanggan',ico:'users'},
     {id:'vendor',label:'Master Vendor',ico:'vendor'},
-    {id:'kalkulator',label:'🧮 Kalkulator Produksi',ico:'calc'}
+    {id:'kalkulator',label:'Kalkulator Produksi',ico:'calc'}
   ],
   kasir:[
     {sec:'Menu Kasir'},
@@ -241,10 +243,10 @@ var currentNotaId = null;
 
 // Helper untuk empty state di tabel
 function emptyRow(cols, icon, msg) {
-  icon = icon || '📭';
   msg = msg || 'Belum ada data.';
+  var svgIcon = '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>';
   return '<tr><td colspan="' + cols + '" style="text-align:center; padding:36px 16px;">' +
-    '<div style="font-size:36px; margin-bottom:8px; opacity:0.4;">' + icon + '</div>' +
+    '<div style="display:flex; justify-content:center; margin-bottom:8px; opacity:0.35;">' + svgIcon + '</div>' +
     '<div style="font-size:13px; font-weight:700; color:var(--tx3);">' + msg + '</div>' +
   '</td></tr>';
 }
@@ -269,14 +271,19 @@ function toast(msg, dur, type) {
   var el = document.getElementById('toast');
   if (!el) return;
   clearTimeout(_toastTimer);
-  var icons = { success:'✅', error:'❌', warning:'⚠️', info:'ℹ️' };
+  var icons = {
+    success:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg>',
+    error:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+    warning:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    info:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+  };
   var bgs   = { success:'#10B981', error:'#EF4444', warning:'#F59E0B', info:'#3B82F6' };
   var bg    = bgs[type] || '#334155';
   el.style.cssText = 'position:fixed;bottom:24px;right:20px;z-index:99999;background:'+bg+
     ';color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;font-weight:700;'+
     'box-shadow:0 8px 24px rgba(0,0,0,0.25);display:flex;align-items:center;gap:8px;'+
     'max-width:320px;word-break:break-word;opacity:1;transition:opacity 0.3s;pointer-events:none;';
-  el.innerHTML = (icons[type] || '💬') + ' ' + msg;
+  el.innerHTML = '<span style="flex-shrink:0;display:flex;">' + (icons[type] || '') + '</span><span>' + msg + '</span>';
   el.classList.add('show');
   _toastTimer = setTimeout(function() {
     el.style.opacity = '0';
@@ -294,7 +301,7 @@ function getHarga(b,qty){var t=b.tiers.find(function(x){return qty<=x.max;})||b.
 
 // ── F3: Status badge — warna lengkap ─────────────────────────
 function badgeBayar(s, sisa){
-  if(s==='Lunas'||(sisa!==undefined&&sisa<=0)) return '<span class="badge bg-green"><span class="dot dot-g"></span>Lunas ✓</span>';
+  if(s==='Lunas'||(sisa!==undefined&&sisa<=0)) return '<span class="badge bg-green"><span class="dot dot-g"></span>Lunas</span>';
   if(s==='DP'||s==='Titip')  return '<span class="badge bg-amber"><span class="dot dot-a"></span>DP / Cicilan</span>';
   if(s==='Proses')            return '<span class="badge bg-blue"><span class="dot dot-b"></span>Proses</span>';
   if(s==='Selesai')           return '<span class="badge bg-gray"><span class="dot dot-gray"></span>Selesai</span>';
@@ -303,7 +310,7 @@ function badgeBayar(s, sisa){
 
 /* ════════════════ FUNGSI KIRIM WA DIRECT (Universal: PC + Android) ════════════════ */
 function sendWA(phone, message) {
-  if (!phone) { toast('❌ Nomor WA pelanggan belum diisi!', 2500, 'error'); return; }
+  if (!phone) { toast('Nomor WA pelanggan belum diisi!', 2500, 'error'); return; }
   // Normalisasi nomor: 08xx → 628xx, buang karakter non-angka
   let p = phone.toString().trim().replace(/\D/g, '');
   if (p.startsWith('0')) p = '62' + p.slice(1);
@@ -365,8 +372,8 @@ async function syncToSheets(silent = false) {
 
   try {
     await fetch(url, payload);
-    if(!silent) toast("✔️ Data berhasil dikirim ke Google Sheets!", 3500);
-  } catch (error) { if(!silent) toast("⚠️ Gagal terhubung. Pastikan internet lancar dan URL benar.", 3000); }
+    if(!silent) toast("Data berhasil dikirim ke Google Sheets!", 3500);
+  } catch (error) { if(!silent) toast("Gagal terhubung. Pastikan internet lancar dan URL benar.", 3000); }
   
   if(!silent) {
       if(btn1) { btn1.innerHTML = 'Simpan URL & Jalankan Sync'; btn1.disabled = false; }
@@ -402,7 +409,7 @@ async function fetchGemini(prompt, expectJson = false) {
 // AI UNTUK KASIR
 async function prosesAIPesanan() {
   if(!apiKey) { 
-    toast('⚠️ API Key Gemini belum diisi! Masuk ke Pengaturan Toko dan isi API Key.', 4000, 'warning'); 
+    toast('API Key Gemini belum diisi! Masuk ke Pengaturan Toko dan isi API Key.', 4000, 'warning'); 
     showPage('setting');
     return; 
   }
@@ -587,7 +594,7 @@ function showPage(id){
   if(pg) pg.classList.add('on'); if(sb) sb.classList.add('on');
   var mainSb = document.getElementById('sidebar-main'); var ov = document.getElementById('sidebar-overlay');
   if(mainSb && mainSb.classList.contains('on')) { mainSb.classList.remove('on'); if(ov) ov.classList.remove('on'); }
-  // ✅ Auto-scroll ke atas saat ganti halaman
+  // Auto-scroll ke atas saat ganti halaman
   window.scrollTo({top: 0, behavior: 'smooth'});
   var main = document.getElementById('main-content');
   if(main) main.scrollTo({top: 0, behavior: 'smooth'});
@@ -703,7 +710,7 @@ function renderSetting() {
     let savedKey = localStorage.getItem('abunawas_gemini_key') || '';
     if(keyEl) keyEl.value = savedKey;
     if(statusEl) {
-        statusEl.textContent = savedKey ? '✅ API Key sudah tersimpan. Fitur AI aktif!' : '⚠️ API Key belum diisi. Fitur AI tidak akan bisa digunakan.';
+        statusEl.textContent = savedKey ? 'API Key sudah tersimpan. Fitur AI aktif!' : 'API Key belum diisi. Fitur AI tidak akan bisa digunakan.';
         statusEl.style.color = savedKey ? 'var(--green-d)' : 'var(--amber-d)';
     }
     
@@ -719,7 +726,7 @@ function renderSetRek() {
             <input id="sr-b-${i}" value="${r.bank}" placeholder="Nama Bank/E-Wallet" style="width:28%; padding:8px; border:1px solid var(--bdr); border-radius:6px; font-family:var(--fn); background:var(--surf); color:var(--tx);" oninput="autoSaveRek()">
             <input id="sr-n-${i}" value="${r.no}" placeholder="Nomor Rekening" style="width:34%; padding:8px; border:1px solid var(--bdr); border-radius:6px; font-family:var(--mono); background:var(--surf); color:var(--tx);" oninput="autoSaveRek()">
             <input id="sr-a-${i}" value="${r.an}" placeholder="Atas Nama" style="width:34%; padding:8px; border:1px solid var(--bdr); border-radius:6px; font-family:var(--fn); background:var(--surf); color:var(--tx);" oninput="autoSaveRek()">
-            <button class="btn btn-red btn-xs" onclick="delSetRek(${i})" style="padding:0 12px; height:36px; flex-shrink:0;">✕</button>
+            <button class="btn btn-red btn-xs" onclick="delSetRek(${i})" style="padding:0 12px; height:36px; flex-shrink:0;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
     `).join('');
     if(!html) html = '<div style="font-size:12px; color:var(--tx3); text-align:center; padding:10px;">Belum ada rekening — klik "+ Tambah" untuk menambahkan</div>';
@@ -752,7 +759,7 @@ function delSetRek(i) {
 function renderSetKat() {
     let html = (TOKO.kategoriPengeluaran||[]).map((k, i) => `
         <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:var(--surf2); border:1px solid var(--bdr); border-radius:99px; font-size:12px; font-weight:600;">
-            ${k} <button style="background:transparent; border:none; color:var(--red); cursor:pointer; font-weight:800;" onclick="delSetKat(${i})">✕</button>
+            ${k} <button style="background:transparent; border:none; color:var(--red); cursor:pointer; font-weight:800;" onclick="delSetKat(${i})"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </span>
     `).join('');
     document.getElementById('set-kat-wrap').innerHTML = html;
@@ -766,7 +773,7 @@ function delSetKat(i) { TOKO.kategoriPengeluaran.splice(i,1); renderSetKat(); }
 function renderSetKatProduk() {
     let html = (TOKO.kategoriProduk||[]).map((k, i) => `
         <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:var(--surf2); border:1px solid var(--bdr); border-radius:99px; font-size:12px; font-weight:600;">
-            ${k} <button style="background:transparent; border:none; color:var(--red); cursor:pointer; font-weight:800;" onclick="delSetKatProduk(${i})">✕</button>
+            ${k} <button style="background:transparent; border:none; color:var(--red); cursor:pointer; font-weight:800;" onclick="delSetKatProduk(${i})"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </span>
     `).join('');
     document.getElementById('set-kat-prod-wrap').innerHTML = html;
@@ -780,7 +787,7 @@ function delSetKatProduk(i) { TOKO.kategoriProduk.splice(i,1); renderSetKatProdu
 function renderSetSatuan() {
     let html = (TOKO.satuanJual||[]).map((k, i) => `
         <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:var(--surf2); border:1px solid var(--bdr); border-radius:99px; font-size:12px; font-weight:600;">
-            ${k} <button style="background:transparent; border:none; color:var(--red); cursor:pointer; font-weight:800;" onclick="delSetSatuan(${i})">✕</button>
+            ${k} <button style="background:transparent; border:none; color:var(--red); cursor:pointer; font-weight:800;" onclick="delSetSatuan(${i})"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </span>
     `).join('');
     document.getElementById('set-satuan-wrap').innerHTML = html;
@@ -837,14 +844,14 @@ function simpanSetting() {
     renderSetting(); 
     populateKategoriProduk();
     populateSatuanJual();
-    toast('✔️ Pengaturan Toko berhasil disimpan!', 2500, 'success');
+    toast('Pengaturan Toko berhasil disimpan!', 2500, 'success');
 }
 
 /* ════════════════ DASHBOARD KHUSUS BOSS ════════════════ */
 function scBox(l,v,col){
-  var icons = {blue:'📅', green:'📆', amber:'🗓️', purple:'🏆'};
+  var icoCal = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
   return '<div class="card" style="margin:0; border-top:3px solid var(--'+col+'); padding:18px 20px;">' +
-    '<div class="card-t" style="margin-bottom:8px;">' + (icons[col]||'') + ' ' + l + '</div>' +
+    '<div class="card-t" style="margin-bottom:8px; display:flex; align-items:center; gap:6px;">' + icoCal + l + '</div>' +
     '<div style="font-size:18px;font-weight:800;color:var(--'+col+'-d, var(--'+col+'));font-family:var(--mono);">' + v + '</div>' +
   '</div>';
 }
@@ -852,7 +859,7 @@ function sc(l,v,vs,s,ss,col){var accent=col||'blue'; return '<div class="stat" s
 
 function renderDash(){
   var h=new Date().getHours();
-  var salam = h < 11 ? '🌅 Selamat Pagi' : h < 15 ? '☀️ Selamat Siang' : h < 18 ? '🌤️ Selamat Sore' : '🌙 Selamat Malam';
+  var salam = h < 11 ? 'Selamat Pagi' : h < 15 ? 'Selamat Siang' : h < 18 ? 'Selamat Sore' : 'Selamat Malam';
   var namaUser = curUser ? curUser.nama.split(' ')[0] : 'Boss';
   document.getElementById('d-date').innerHTML = salam + ', <b>' + namaUser + '</b> — ' + new Date().toLocaleDateString('id-ID', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
 
@@ -1063,13 +1070,13 @@ function tambahKeKeranjang() {
   
   if (TOKO.useStok && b && !currentEditTrxId) {
       if ((b.stok || 0) < qty) {
-          if(!confirm(`⚠️ Warning Stok: Stok fisik "${b.nama}" saat ini hanya ${b.stok||0}. Lanjutkan tambah ke keranjang?`)) return;
+          if(!confirm(`Warning Stok: Stok fisik "${b.nama}" saat ini hanya ${b.stok||0}. Lanjutkan tambah ke keranjang?`)) return;
       }
   }
 
   CART.push({ kode: b ? b.kode : 'CSTM', barang: b ? b.nama : kodeVal, qty: qty, harga: harga, total: harga * qty, modal: (b ? b.modal : 0) * qty });
   document.getElementById('fi-kode').value = ''; document.getElementById('fi-qty').value = '1'; document.getElementById('fi-harga').value = '';
-  renderCart(); toast('✔️ Barang ditambahkan ke pesanan!', 1500, 'success');
+  renderCart(); toast('Barang ditambahkan ke pesanan!', 1500, 'success');
 }
 
 function hitungOngkir() {
@@ -1196,7 +1203,7 @@ function simpanTrxPage(actionType = 'nota'){
               kasir: curUser.nama, catatan: catatan, diskon: diskon, ongkir: ongkir, komisiNama: komisiNama, komisiNominal: komisiNominal
           };
       }
-      toast('✔️ Transaksi berhasil diupdate!', 2500, 'success');
+      toast('Transaksi berhasil diupdate!', 2500, 'success');
       logActivity('UPDATE', 'Transaksi', { label: 'Edit transaksi '+currentEditTrxId+' — '+nama+' Rp '+fmt(total) });
   } else {
       if (TOKO.useStok) {
@@ -1210,7 +1217,7 @@ function simpanTrxPage(actionType = 'nota'){
         kasir:curUser.nama, catatan:catatan, diskon: diskon, ongkir: ongkir, komisiNama: komisiNama, komisiNominal: komisiNominal
       });
       logActivity('CREATE', 'Transaksi', { label: 'Transaksi baru '+id+' — '+nama+' Rp '+fmt(total)+' ['+bayar+']' });
-      toast('✔️ Transaksi berhasil disimpan!', 2500, 'success');
+      toast('Transaksi berhasil disimpan!', 2500, 'success');
   }
 
   batalEditTrx(); // Membersihkan form dan mereset status
@@ -1224,7 +1231,7 @@ function simpanTrxPage(actionType = 'nota'){
 /* ════════════════ TRANSAKSI (SEMUA) ════════════════ */
 function hapusTrx(id) {
   if(!curUser || curUser.role !== 'boss') return;
-  if(confirm(`⚠️ YAKIN HAPUS PERMANEN TRANSAKSI ${id}?\n\nStok yang terpotong tidak akan kembali otomatis!`)) {
+  if(confirm(`YAKIN HAPUS PERMANEN TRANSAKSI ${id}?\n\nStok yang terpotong tidak akan kembali otomatis!`)) {
      let idx = TRX.findIndex(t => t.id === id);
      if(idx >= 0) {
        let deletedTrx = TRX[idx];
@@ -1256,7 +1263,7 @@ function renderTrx(){
 function bukaPelunasan(id) { document.getElementById('pl-id').value = id; openModal('mo-pelunasan'); }
 function prosesPelunasan() {
   let id = document.getElementById('pl-id').value; let met = document.getElementById('pl-metode').value; let t = TRX.find(x => x.id === id);
-  if(t) { t.bayar = 'Lunas'; t.sisa = 0; t.dibayar = t.total; t.metode = met; saveData(); closeModal('mo-pelunasan'); renderTrx(); renderPiutang(); showNota(id); toast('✔️ Berhasil ditandai Lunas!', 2500, 'success'); }
+  if(t) { t.bayar = 'Lunas'; t.sisa = 0; t.dibayar = t.total; t.metode = met; saveData(); closeModal('mo-pelunasan'); renderTrx(); renderPiutang(); showNota(id); toast('Berhasil ditandai Lunas!', 2500, 'success'); }
 }
 
 /* ════════════════ PIUTANG ════════════════ */
@@ -1351,7 +1358,7 @@ function renderCartVendor() {
 
     let html = '<table style="margin-bottom:0;"><thead><tr><th>Barang / Ket</th><th style="text-align:center">Qty</th><th style="text-align:right">Subtotal</th><th style="width:30px"></th></tr></thead><tbody>';
     let gTot = 0;
-    CART_VND.forEach((c, i) => { gTot += c.total; html += `<tr><td style="font-weight:600;font-size:12px">${c.barang}<br><span style="font-size:10px; color:var(--tx2); font-family:var(--mono);">${fmtRp(c.harga)}/satuan</span></td><td style="text-align:center;font-weight:700">x${c.qty}</td><td style="font-weight:800; color:var(--amber-d); text-align:right;font-size:12px">${fmtRp(c.total)}</td><td style="text-align:right;"><button class="btn btn-red btn-xs" onclick="hapusDariKeranjangVendor(${i})">✕</button></td></tr>`; });
+    CART_VND.forEach((c, i) => { gTot += c.total; html += `<tr><td style="font-weight:600;font-size:12px">${c.barang}<br><span style="font-size:10px; color:var(--tx2); font-family:var(--mono);">${fmtRp(c.harga)}/satuan</span></td><td style="text-align:center;font-weight:700">x${c.qty}</td><td style="font-weight:800; color:var(--amber-d); text-align:right;font-size:12px">${fmtRp(c.total)}</td><td style="text-align:right;"><button class="btn btn-red btn-xs" onclick="hapusDariKeranjangVendor(${i})"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td></tr>`; });
     html += '</tbody></table>'; wrap.innerHTML = html;
     if(elTotal) elTotal.textContent = fmtRp(gTot);
 
@@ -1408,12 +1415,12 @@ function simpanPengeluaranCart() {
   
   CART_VND = []; renderCartVendor(); renderPengeluaran(); 
   if(document.getElementById('pg-laci') && document.getElementById('pg-laci').classList.contains('on')) renderLaci();
-  toast('✔️ Nota Belanja berhasil disimpan!', 2500, 'success');
+  toast('Nota Belanja berhasil disimpan!', 2500, 'success');
 }
 
 function hapusPengeluaran(id) {
   if(!curUser || curUser.role !== 'boss') return;
-  if(confirm(`⚠️ YAKIN HAPUS DATA PENGELUARAN ${id}?\n\nData yang dihapus akan memengaruhi laporan laba dan laci kasir.`)) {
+  if(confirm(`YAKIN HAPUS DATA PENGELUARAN ${id}?\n\nData yang dihapus akan memengaruhi laporan laba dan laci kasir.`)) {
      let idx = PENGELUARAN.findIndex(p => p.id === id);
      if(idx >= 0) {
        let peng = PENGELUARAN[idx];
@@ -1466,8 +1473,8 @@ function renderHutangVendor(){
   var rows=data.map((v,i) => {
     var idxPeng = PENGELUARAN.indexOf(v);
     var sisaVal = v.sisa !== undefined ? v.sisa : v.total;
-    var waBtn = v.vendor ? `<button class="btn btn-wa btn-xs" onclick="kirimWAVendorSingkat(${idxPeng})" title="Kirim WA ke vendor">💬 WA</button>` : '';
-    return `<tr><td class="mono">${v.tgl}</td><td style="font-weight:600">${v.vendor||'-'}</td><td style="font-size:12px;color:var(--tx)">${v.ket}</td><td style="font-weight:800;color:var(--red)">${fmtRp(sisaVal)}</td><td><div style="display:flex; gap:6px; flex-wrap:wrap;"><button class="btn btn-green btn-xs" onclick="lunasPengeluaran(${idxPeng})">✔ Lunas</button>${waBtn}</div></td></tr>`;
+    var waBtn = v.vendor ? `<button class="btn btn-wa btn-xs" onclick="kirimWAVendorSingkat(${idxPeng})" title="Kirim WA ke vendor">WA</button>` : '';
+    return `<tr><td class="mono">${v.tgl}</td><td style="font-weight:600">${v.vendor||'-'}</td><td style="font-size:12px;color:var(--tx)">${v.ket}</td><td style="font-weight:800;color:var(--red)">${fmtRp(sisaVal)}</td><td><div style="display:flex; gap:6px; flex-wrap:wrap;"><button class="btn btn-green btn-xs" onclick="lunasPengeluaran(${idxPeng})">Lunas</button>${waBtn}</div></td></tr>`;
   }).join('');
   document.getElementById('hv-tbl').innerHTML=`<table><thead><tr><th>Tgl Belanja</th><th>Nama Vendor / Toko</th><th>Rangkuman Nota</th><th>Sisa Tagihan Vendor</th><th>Aksi</th></tr></thead><tbody>${rows||emptyRow(5,'✅','Tidak ada hutang ke vendor saat ini.')}</tbody></table>`;
 }
@@ -1687,7 +1694,7 @@ function getLaporanData() {
   if(kasirEl && kasirEl.options.length <= 1) {
     [...new Set(TRX.map(t=>t.kasir).filter(Boolean))].forEach(function(k){
       if(!kasirEl.querySelector('option[value="'+k+'"]')){
-        var o=document.createElement('option'); o.value=k; o.textContent='👤 '+k; kasirEl.appendChild(o);
+        var o=document.createElement('option'); o.value=k; o.textContent=k; kasirEl.appendChild(o);
       }
     });
   }
@@ -1966,10 +1973,10 @@ function buildNotaCustomer(t) {
     </div>
 
     <div class="nota-acts" id="nota-action-buttons">
-      <button class="btn btn-blue nota-btn" onclick="kirimNotaTeks()">📝 Kirim Nota Teks</button>
-      <button class="btn btn-green nota-btn" onclick="kirimNotaGambar()">🖼️ Nota Gambar</button>
-      <button class="btn btn-amber nota-btn" onclick="tampilkanInfoPembayaran()">💳 Info Pembayaran</button>
-      <button class="btn btn-ghost nota-btn" onclick="kirimPDF()">📄 Download PDF</button>
+      <button class="btn btn-blue nota-btn" onclick="kirimNotaTeks()">Kirim Nota Teks</button>
+      <button class="btn btn-green nota-btn" onclick="kirimNotaGambar()">Nota Gambar</button>
+      <button class="btn btn-amber nota-btn" onclick="tampilkanInfoPembayaran()">Info Pembayaran</button>
+      <button class="btn btn-ghost nota-btn" onclick="kirimPDF()">Download PDF</button>
     </div>
   `;
 }
@@ -2004,17 +2011,17 @@ function buildInfoPembayaran(t) {
 
         <div class="info-metode-grid">
           <div class="info-metode-card cash">
-            <div class="metode-icon">💵</div>
+            <div class="metode-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></svg></div>
             <div class="metode-name">Cash</div>
             <div class="metode-desc">Bayar langsung di toko</div>
           </div>
           <div class="info-metode-card transfer">
-            <div class="metode-icon">🏦</div>
+            <div class="metode-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="21" x2="21" y2="21"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="5 6 12 3 19 6"/><line x1="4" y1="10" x2="4" y2="21"/><line x1="20" y1="10" x2="20" y2="21"/></svg></div>
             <div class="metode-name">Transfer Bank</div>
             <div class="metode-desc">Ke rekening berikut</div>
           </div>
           <div class="info-metode-card qris">
-            <div class="metode-icon">📱</div>
+            <div class="metode-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
             <div class="metode-name">QRIS</div>
             <div class="metode-desc">Scan QR di bawah</div>
           </div>
@@ -2039,10 +2046,10 @@ function buildInfoPembayaran(t) {
     </div>
 
     <div class="nota-acts" id="info-action-buttons">
-      <button class="btn btn-blue nota-btn" onclick="kirimInfoBayarTeks()">📝 Info Bayar Teks</button>
-      <button class="btn btn-green nota-btn" onclick="kirimInfoBayarGambar()">🖼️ Info Bayar Gambar</button>
-      <button class="btn btn-ghost nota-btn" onclick="kirimQRISSaja()">📱 Kirim QRIS</button>
-      <button class="btn btn-amber nota-btn" onclick="kirimRekeningSaja()">🏦 Kirim Rekening</button>
+      <button class="btn btn-blue nota-btn" onclick="kirimInfoBayarTeks()">Info Bayar Teks</button>
+      <button class="btn btn-green nota-btn" onclick="kirimInfoBayarGambar()">Info Bayar Gambar</button>
+      <button class="btn btn-ghost nota-btn" onclick="kirimQRISSaja()">Kirim QRIS</button>
+      <button class="btn btn-amber nota-btn" onclick="kirimRekeningSaja()">Kirim Rekening</button>
       <button class="btn btn-ghost nota-btn" onclick="tampilkanNotaCustomer()">← Kembali ke Nota</button>
     </div>
   `;
@@ -2392,7 +2399,7 @@ function renderAuditLog() {
   if (!container) return;
 
   if (filtered.length === 0) {
-    container.innerHTML = '<div class="cp-empty"><div class="cp-empty-ico">🔍</div>Tidak ada log yang cocok dengan filter.</div>';
+    container.innerHTML = '<div class="cp-empty"><div class="cp-empty-ico"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>Tidak ada log yang cocok dengan filter.</div>';
     return;
   }
 
@@ -2461,7 +2468,7 @@ function showAuditDetail(id) {
 
   var titleEl = document.getElementById('mo-audit-title');
   var bodyEl  = document.getElementById('mo-audit-body');
-  if (titleEl) titleEl.innerHTML = '🔐 Detail Log — <span style="color:#00f5ff;">'+escHtml(l.aksi)+'</span>';
+  if (titleEl) titleEl.innerHTML = 'Detail Log — <span style="color:#00f5ff;">'+escHtml(l.aksi)+'</span>';
   if (bodyEl)  bodyEl.innerHTML  = detailHtml + diffHtml;
   openModal('mo-audit-detail');
 }
@@ -2569,7 +2576,7 @@ function simpanTagihan() {
   document.getElementById('tg-tgl').value = '';
   document.getElementById('tg-ket').value = '';
   renderTagihan();
-  toast('✅ Tagihan berhasil ditambahkan!', 2500, 'success');
+  toast('Tagihan berhasil ditambahkan!', 2500, 'success');
 }
 
 function hapusTagihan(id) {
@@ -2584,7 +2591,7 @@ function renderTagihan() {
   var el = document.getElementById('tg-list');
   if (!el) return;
   if (TAGIHAN.length === 0) {
-    el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--tx3);"><div style="font-size:36px;margin-bottom:8px;">🔔</div><div style="font-weight:700;">Belum ada tagihan rutin.</div></div>';
+    el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--tx3);"><div style="display:flex;justify-content:center;margin-bottom:8px;opacity:0.5;"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div><div style="font-weight:700;">Belum ada tagihan rutin.</div></div>';
     return;
   }
   var hari = new Date().getDate();
@@ -2594,10 +2601,10 @@ function renderTagihan() {
     var cls = '';
     var statusTeks = 'Jatuh tempo tgl <b>' + t.tgl + '</b> setiap bulan';
     var badgeCls = 'bg-green';
-    if (selisih <= 0) { cls = 'danger'; statusTeks = '⚠️ Sudah jatuh tempo!'; badgeCls = 'bg-red'; }
-    else if (selisih <= 5) { cls = 'warning'; statusTeks = '⏰ ' + selisih + ' hari lagi jatuh tempo'; badgeCls = 'bg-amber'; }
+    if (selisih <= 0) { cls = 'danger'; statusTeks = 'Sudah jatuh tempo!'; badgeCls = 'bg-red'; }
+    else if (selisih <= 5) { cls = 'warning'; statusTeks = selisih + ' hari lagi jatuh tempo'; badgeCls = 'bg-amber'; }
     html += '<div class="tg-card '+cls+'">' +
-      '<div style="font-size:24px;">'+getCategoryIcon(t.kat)+'</div>' +
+      '<div style="display:flex;align-items:center;color:var(--tx2);">'+getCategoryIcon(t.kat)+'</div>' +
       '<div style="flex:1;">' +
         '<div style="font-weight:800;font-size:14px;color:var(--tx);">'+t.nama+'</div>' +
         '<div style="font-size:11px;color:var(--tx2);margin-top:2px;">'+t.kat+' &bull; '+statusTeks+'</div>' +
@@ -2614,8 +2621,15 @@ function renderTagihan() {
 }
 
 function getCategoryIcon(kat) {
-  var icons = {'Listrik & Air':'⚡','Internet':'📶','Sewa Tempat':'🏠','Cicilan Mesin':'⚙️','Gaji Karyawan':'👥','Langganan Software':'💻'};
-  return icons[kat] || '📋';
+  var icons = {
+    'Listrik & Air':'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+    'Internet':'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>',
+    'Sewa Tempat':'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+    'Cicilan Mesin':'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+    'Gaji Karyawan':'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>',
+    'Langganan Software':'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>'
+  };
+  return icons[kat] || '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>';
 }
 
 function cekReminderTagihan() {
@@ -2632,7 +2646,7 @@ function cekReminderTagihan() {
           });
         });
       } else {
-        new Notification('✅ Abunawas — Tagihan Aman', { body: 'Tidak ada tagihan yang jatuh tempo dalam 3 hari ke depan.' });
+        new Notification('Abunawas — Tagihan Aman', { body: 'Tidak ada tagihan yang jatuh tempo dalam 3 hari ke depan.' });
       }
       toast('Notifikasi reminder diaktifkan!', 2500, 'success');
     } else {
@@ -2672,23 +2686,23 @@ function renderSkorFinansial() {
 
   var warna = skor >= 75 ? '#10B981' : skor >= 50 ? '#F59E0B' : '#EF4444';
   var warnaLabel = skor >= 75 ? '#047857' : skor >= 50 ? '#B45309' : '#B91C1C';
-  var labelSkor = skor >= 75 ? 'SEHAT ✓' : skor >= 50 ? 'WASPADA ⚠' : 'BAHAYA ✕';
+  var labelSkor = skor >= 75 ? 'SEHAT' : skor >= 50 ? 'WASPADA' : 'BAHAYA';
 
   // DTI
   var totalCicilan = TAGIHAN.reduce((s, t) => s + (t.nominal || 0), 0);
   var dti = totalPemasukan > 0 ? Math.round((totalCicilan / totalPemasukan) * 100) : 0;
-  var dtiLabel = dti <= 30 ? '✅ Aman' : dti <= 50 ? '⚠️ Waspada' : '🚨 Bahaya';
+  var dtiLabel = dti <= 30 ? 'Aman' : dti <= 50 ? 'Waspada' : 'Bahaya';
   var dtiColor = dti <= 30 ? '#10B981' : dti <= 50 ? '#F59E0B' : '#EF4444';
 
   var circumference = 2 * Math.PI * 60;
   var dashOffset = circumference - (skor / 100) * circumference;
 
   var komponen = [
-    { ico: '📊', label: 'Rasio Laba', val: sRasio, desc: 'Perbandingan laba terhadap pemasukan' },
-    { ico: '💰', label: 'Laba Bersih', val: sLaba, desc: fmtRp(laba) + ' bulan ini' },
-    { ico: '👤', label: 'Piutang Terkendali', val: sPiutang, desc: 'Total piutang: ' + fmtRp(totalPiutang) },
-    { ico: '🏦', label: 'Hutang Vendor', val: sHutang, desc: 'Total hutang vendor: ' + fmtRp(totalHutang) },
-    { ico: '👥', label: 'Kasbon Karyawan', val: sKasbon, desc: 'Total kasbon: ' + fmtRp(totalKasbon) }
+    { ico: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>', label: 'Rasio Laba', val: sRasio, desc: 'Perbandingan laba terhadap pemasukan' },
+    { ico: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 010-4h14v4"/><path d="M3 5v14a2 2 0 002 2h16v-5"/><path d="M18 12a2 2 0 000 4h4v-4z"/></svg>', label: 'Laba Bersih', val: sLaba, desc: fmtRp(laba) + ' bulan ini' },
+    { ico: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>', label: 'Piutang Terkendali', val: sPiutang, desc: 'Total piutang: ' + fmtRp(totalPiutang) },
+    { ico: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="21" x2="21" y2="21"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="5 6 12 3 19 6"/><line x1="4" y1="10" x2="4" y2="21"/><line x1="20" y1="10" x2="20" y2="21"/></svg>', label: 'Hutang Vendor', val: sHutang, desc: 'Total hutang vendor: ' + fmtRp(totalHutang) },
+    { ico: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>', label: 'Kasbon Karyawan', val: sKasbon, desc: 'Total kasbon: ' + fmtRp(totalKasbon) }
   ];
 
   var komponenHtml = komponen.map(function(k) {
@@ -2720,13 +2734,13 @@ function renderSkorFinansial() {
         '<div style="background:var(--surf2);border-radius:12px;padding:12px;"><div style="font-size:11px;color:var(--tx3);font-weight:700;">Laba Bersih</div><div style="font-weight:900;font-size:14px;font-family:var(--mono);color:'+(laba>=0?'var(--green)':'var(--red)')+';">'+fmtRp(laba)+'</div></div>' +
       '</div>' +
       '<div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;padding:14px;margin-bottom:16px;">' +
-        '<div style="font-size:11px;font-weight:800;color:var(--tx3);margin-bottom:8px;">⚖️ DEBT TO INCOME RATIO (DTI)</div>' +
+        '<div style="font-size:11px;font-weight:800;color:var(--tx3);margin-bottom:8px;">DEBT TO INCOME RATIO (DTI)</div>' +
         '<div style="font-size:28px;font-weight:900;font-family:var(--mono);color:'+dtiColor+';">'+dti+'%</div>' +
         '<div style="font-size:13px;font-weight:700;color:'+dtiColor+';margin:4px 0;">'+dtiLabel+'</div>' +
         '<div style="font-size:11px;color:var(--tx3);">Total tagihan rutin '+fmtRp(totalCicilan)+' / bulan</div>' +
       '</div>' +
     '</div>' +
-    '<div class="card"><div class="card-t">📊 Detail Komponen Skor</div>' + komponenHtml + '</div>';
+    '<div class="card"><div class="card-t">Detail Komponen Skor</div>' + komponenHtml + '</div>';
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -2797,7 +2811,7 @@ async function kirimAIChat() {
     aiChatHistory.push({ role: 'assistant', content: jawaban });
   } catch (e) {
     typing.remove();
-    tambahBubble('bot', '⚠️ Gagal terhubung ke AI. Cek koneksi atau API key kamu.');
+    tambahBubble('bot', 'Gagal terhubung ke AI. Cek koneksi atau API key kamu.');
   }
 }
 
@@ -2807,9 +2821,9 @@ function tambahBubble(tipe, teks, isTyping) {
   var div = document.createElement('div');
   div.className = 'ai-bubble ai-bubble-' + tipe + (isTyping ? ' ai-bubble-typing' : '');
   if (tipe === 'bot') {
-    div.innerHTML = '<div class="ai-bubble-ava">🤖</div><div class="ai-bubble-msg">' + (isTyping ? '<span style="opacity:0.6">Sedang mengetik...</span>' : teks.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')) + '</div>';
+    div.innerHTML = '<div class="ai-bubble-ava"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4L12 2z"/></svg></div><div class="ai-bubble-msg">' + (isTyping ? '<span style="opacity:0.6">Sedang mengetik...</span>' : teks.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')) + '</div>';
   } else {
-    div.innerHTML = '<div class="ai-bubble-msg">' + teks + '</div><div class="ai-bubble-ava" style="background:var(--saffron);">👤</div>';
+    div.innerHTML = '<div class="ai-bubble-msg">' + teks + '</div><div class="ai-bubble-ava" style="background:var(--saffron);color:#fff;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
   }
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
@@ -2868,7 +2882,7 @@ async function prosesOCR() {
 
     document.getElementById('ocr-loading').style.display = 'none';
     document.getElementById('ocr-result').style.display = 'block';
-    toast('✅ AI berhasil membaca nota!', 2500, 'success');
+    toast('AI berhasil membaca nota!', 2500, 'success');
   } catch(e) {
     document.getElementById('ocr-loading').style.display = 'none';
     document.getElementById('ocr-preview').style.display = 'block';
@@ -2889,7 +2903,7 @@ function simpanDariOCR() {
   PENGELUARAN.unshift({ id, tgl, vendor, total, subtotal: total, bayar: 'Lunas', ket: ket || kat, items: [{ nama: ket, nominal: total }] });
   saveData();
   logActivity('CREATE', 'Pengeluaran', { label: 'OCR Nota: ' + vendor + ' Rp ' + fmt(total) });
-  toast('✅ Pengeluaran dari nota berhasil disimpan!', 2500, 'success');
+  toast('Pengeluaran dari nota berhasil disimpan!', 2500, 'success');
   resetOCR();
   showPage('pengeluaran');
 }
@@ -2939,8 +2953,8 @@ function startVoice() {
   voiceRec.onstart = function() {
     isRecording = true;
     document.getElementById('voice-mic-btn').classList.add('recording');
-    document.getElementById('voice-mic-btn').textContent = '⏹';
-    document.getElementById('voice-status').textContent = '🔴 Sedang merekam... Ngomong sekarang!';
+    document.getElementById('voice-mic-btn').innerHTML = '<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>';
+    document.getElementById('voice-status').textContent = 'Sedang merekam... Ngomong sekarang!';
   };
   voiceRec.onresult = function(e) {
     var interim = '';
@@ -2959,7 +2973,7 @@ function stopVoice() {
   isRecording = false;
   if (voiceRec) { try { voiceRec.stop(); } catch(e){} }
   document.getElementById('voice-mic-btn').classList.remove('recording');
-  document.getElementById('voice-mic-btn').textContent = '🎙️';
+  document.getElementById('voice-mic-btn').innerHTML = '<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>';
   document.getElementById('voice-status').textContent = voiceTranscript ? 'Rekaman selesai. Klik proses!' : 'Tekan tombol mic untuk mulai';
   if (voiceTranscript.trim()) {
     document.getElementById('voice-process-btn').style.display = 'block';
@@ -2992,7 +3006,7 @@ async function prosesVoiceTrx() {
     document.getElementById('vr-metode').value = parsed.metode || 'Cash';
     document.getElementById('vr-tgl').value = nowDate();
     document.getElementById('voice-result').style.display = 'block';
-    document.getElementById('voice-status').textContent = '✅ AI berhasil mengekstrak transaksi!';
+    document.getElementById('voice-status').textContent = 'AI berhasil mengekstrak transaksi!';
   } catch(e) {
     document.getElementById('voice-status').textContent = 'Gagal proses. Coba lagi.';
     toast('Gagal memproses suara dengan AI.', 2500, 'error');
@@ -3017,7 +3031,7 @@ function simpanVoiceTrx() {
     logActivity('CREATE', 'Transaksi', { label: 'Voice: '+ket+' Rp '+fmt(nominal) });
   }
   saveData();
-  toast('✅ Transaksi dari suara berhasil disimpan!', 2500, 'success');
+  toast('Transaksi dari suara berhasil disimpan!', 2500, 'success');
   resetVoice();
 }
 
@@ -3027,7 +3041,7 @@ function resetVoice() {
   document.getElementById('voice-process-btn').style.display = 'none';
   document.getElementById('voice-result').style.display = 'none';
   document.getElementById('voice-status').textContent = 'Tekan tombol mic untuk mulai';
-  document.getElementById('voice-mic-btn').textContent = '🎙️';
+  document.getElementById('voice-mic-btn').innerHTML = '<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>';
 }
 
 /* ── helper ── */
@@ -3119,7 +3133,7 @@ function renderHPPTable() {
       <td style="padding:8px"><input value="${r.harga||''}" type="text" inputmode="numeric" placeholder="0" style="text-align:right;width:100%;padding:8px;border:1px solid var(--bdr);border-radius:6px;font-family:var(--mono)" oninput="hppRows[${i}].harga=cleanRibuan(this.value);this.value=formatRibuan(cleanRibuan(this.value));renderHPPTotals()" onfocus="this.select()"></td>
       <td style="padding:8px"><input value="${r.qty}" type="number" min="0.1" step="0.1" style="text-align:right;width:70px;padding:8px;border:1px solid var(--bdr);border-radius:6px" oninput="hppRows[${i}].qty=parseFloat(this.value)||1;renderHPPTotals()"></td>
       <td style="text-align:right;font-weight:800;font-family:var(--mono);color:var(--blue-d);padding:8px">${fmtRp(sub)}</td>
-      <td style="text-align:center;padding:8px"><button class="btn btn-red btn-xs" onclick="hapusHPPRow(${i})">✕</button></td>
+      <td style="text-align:center;padding:8px"><button class="btn btn-red btn-xs" onclick="hapusHPPRow(${i})"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>
     </tr>`;
   }).join('');
   renderHPPTotals();
@@ -3156,13 +3170,13 @@ function hitungSimulasi() {
 
   var warna = profit >= 0 ? 'var(--green)' : 'var(--red)';
   el.innerHTML = [
-    {l:'Omzet', v: fmtRp(omzet), c:'var(--blue-d)', ico:'💵'},
-    {l:'Total Modal', v: fmtRp(totalModal), c:'var(--amber)', ico:'📦'},
-    {l:'Estimasi Profit', v: (profit>=0?'+':'')+fmtRp(profit), c: warna, ico:'💰'},
-    {l:'Margin', v: margin+'%', c: warna, ico:'📊'}
+    {l:'Omzet', v: fmtRp(omzet), c:'var(--blue-d)'},
+    {l:'Total Modal', v: fmtRp(totalModal), c:'var(--amber)'},
+    {l:'Estimasi Profit', v: (profit>=0?'+':'')+fmtRp(profit), c: warna},
+    {l:'Margin', v: margin+'%', c: warna}
   ].map(function(item){
     return `<div class="sim-box" style="border-top:3px solid ${item.c};background:var(--surf);border-radius:10px;padding:12px;margin:4px">
-      <div style="font-size:11px;color:var(--tx3);font-weight:700">${item.ico} ${item.l}</div>
+      <div style="font-size:11px;color:var(--tx3);font-weight:700">${item.l}</div>
       <div class="sim-val" style="color:${item.c};font-size:18px;font-weight:900;font-family:var(--mono)">${item.v}</div>
     </div>`;
   }).join('');
@@ -3250,7 +3264,7 @@ function tambahKeBannerRekap() {
   saveBannerRekap();
   renderBannerRekap();
   clearBannerInputs();
-  toast('✅ Ditambahkan ke rekap!', 1500, 'success');
+  toast('Ditambahkan ke rekap!', 1500, 'success');
 }
 
 function clearBannerInputs() {
@@ -3314,12 +3328,12 @@ function renderBannerRekap() {
       <td style="text-align:right;font-weight:700;padding:8px">${fmtRp(pricePerM2)}</td>
       <td style="text-align:right;font-weight:800;font-family:var(--mono);color:var(--blue-d);padding:8px">${fmtRp(totalPerPcs)}</td>
       <td style="text-align:right;font-weight:800;font-family:var(--mono);color:var(--green-d);padding:8px">${fmtRp(total)}</td>
-      <td style="text-align:center;padding:8px"><button class="btn btn-red btn-xs" onclick="hapusBannerRekapRow(${i})">✕</button></td>
+      <td style="text-align:center;padding:8px"><button class="btn btn-red btn-xs" onclick="hapusBannerRekapRow(${i})"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>
     </tr>`;
   }).join('');
 
   tfoot.innerHTML = `<tr style="background:var(--surf2)">
-    <td colspan="1" style="padding:12px;font-weight:900;font-size:13px;color:var(--blue-d);border-top:2px solid var(--bdr)">📊 TOTAL REKAP</td>
+    <td colspan="1" style="padding:12px;font-weight:900;font-size:13px;color:var(--blue-d);border-top:2px solid var(--bdr)">TOTAL REKAP</td>
     <td style="text-align:center;padding:12px;font-weight:900;font-size:14px;color:var(--blue-d);border-top:2px solid var(--bdr)">${totalLuas.toFixed(2)} m²</td>
     <td style="text-align:center;padding:12px;font-weight:900;font-size:16px;color:var(--blue-d);border-top:2px solid var(--bdr)">${totalQty}</td>
     <td colspan="2" style="padding:12px;border-top:2px solid var(--bdr)"></td>
@@ -3328,7 +3342,7 @@ function renderBannerRekap() {
   </tr>
   <tr style="background:var(--blue-l)">
     <td colspan="7" style="padding:10px;font-size:12px;color:var(--blue-d);font-weight:700;text-align:center">
-      📦 Total Item: ${totalItem} | 📐 Total Luas: ${totalLuas.toFixed(2)} m² | 💰 Total Produksi: ${fmtRp(totalNominal)}
+      Total Item: ${totalItem} | Total Luas: ${totalLuas.toFixed(2)} m² | Total Produksi: ${fmtRp(totalNominal)}
     </td>
   </tr>`;
 }
@@ -3358,7 +3372,7 @@ function getBarangSheetUrl() {
   var el = document.getElementById('barang-sheet-url');
   var url = el ? el.value.trim() : localStorage.getItem('abunawas_barang_sheet_url') || '';
   if (!url) {
-    setBackupBrgStatus('error', '⚠️ URL Webhook belum diisi! Masukkan URL Google Apps Script terlebih dahulu.');
+    setBackupBrgStatus('error', 'URL Webhook belum diisi! Masukkan URL Google Apps Script terlebih dahulu.');
     return null;
   }
   localStorage.setItem('abunawas_barang_sheet_url', url);
@@ -3412,8 +3426,8 @@ async function backupDataBarang() {
   if (!url) return;
 
   var btnIco = document.getElementById('btn-backup-brg-ico');
-  if (btnIco) btnIco.textContent = '⏳';
-  setBackupBrgStatus('loading', '<span style="animation:spin 1s linear infinite;display:inline-block;font-size:16px;">⚙️</span> Sedang mengirim data barang ke Google Sheets...');
+  if (btnIco) btnIco.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>';
+  setBackupBrgStatus('loading', '<span style="display:inline-flex;vertical-align:-3px;margin-right:4px;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10"/></svg></span>Sedang mengirim data barang ke Google Sheets...');
 
   logActivity('EXPORT', 'Backup', { label: 'Backup Data Barang ke Sheets (' + BARANG.length + ' item)' });
 
@@ -3440,22 +3454,22 @@ async function backupDataBarang() {
 
     if (resp.ok && hasil.status !== 'error') {
       setBackupBrgStatus('success',
-        '✅ Backup berhasil! <b>' + BARANG.length + ' data barang</b> terkirim ke Google Sheets. ' +
+        'Backup berhasil! <b>' + BARANG.length + ' data barang</b> terkirim ke Google Sheets. ' +
         (hasil.message ? '(' + hasil.message + ')' : '')
       );
       showBarangPreview(BARANG);
-      toast('✅ Backup Data Barang ke Sheets berhasil!', 3000, 'success');
+      toast('Backup Data Barang ke Sheets berhasil!', 3000, 'success');
     } else {
       throw new Error(hasil.message || 'Response tidak valid dari server');
     }
   } catch(err) {
     setBackupBrgStatus('error',
-      '❌ Backup gagal! ' + err.message +
+      'Backup gagal! ' + err.message +
       '<br><span style="font-size:11px;font-weight:400;opacity:0.8;">Pastikan URL valid, sudah di-deploy sebagai Web App, dan akses "Anyone".</span>'
     );
     toast('Backup gagal: ' + err.message, 3500, 'error');
   } finally {
-    if (btnIco) btnIco.textContent = '☁️';
+    if (btnIco) btnIco.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>';
   }
 }
 
@@ -3464,11 +3478,11 @@ async function restoreDataBarang() {
   var url = getBarangSheetUrl();
   if (!url) return;
 
-  if (!confirm('⚠️ YAKIN RESTORE DATA BARANG?\n\nData barang yang ada sekarang akan DIGANTI dengan data dari Google Sheets.\n\nPastikan data di Sheets sudah benar sebelum melanjutkan.')) return;
+  if (!confirm('YAKIN RESTORE DATA BARANG?\n\nData barang yang ada sekarang akan DIGANTI dengan data dari Google Sheets.\n\nPastikan data di Sheets sudah benar sebelum melanjutkan.')) return;
 
   var btnIco = document.getElementById('btn-restore-brg-ico');
-  if (btnIco) btnIco.textContent = '⏳';
-  setBackupBrgStatus('loading', '<span style="animation:spin 1s linear infinite;display:inline-block;font-size:16px;">⚙️</span> Sedang mengambil data barang dari Google Sheets...');
+  if (btnIco) btnIco.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>';
+  setBackupBrgStatus('loading', '<span style="display:inline-flex;vertical-align:-3px;margin-right:4px;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10"/></svg></span>Sedang mengambil data barang dari Google Sheets...');
 
   try {
     // GET request dengan query param action
@@ -3487,8 +3501,8 @@ async function restoreDataBarang() {
 
     var incoming = hasil.data;
     if (incoming.length === 0) {
-      setBackupBrgStatus('error', '⚠️ Data di Sheets kosong atau tidak ditemukan. Backup dulu sebelum restore.');
-      if (btnIco) btnIco.textContent = '⬇️';
+      setBackupBrgStatus('error', 'Data di Sheets kosong atau tidak ditemukan. Backup dulu sebelum restore.');
+      if (btnIco) btnIco.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
       return;
     }
 
@@ -3500,21 +3514,21 @@ async function restoreDataBarang() {
     logActivity('UPDATE', 'Barang', { label: 'Restore Data Barang dari Sheets (' + incoming.length + ' item)' });
 
     setBackupBrgStatus('success',
-      '✅ Restore berhasil! <b>' + incoming.length + ' data barang</b> berhasil dimuat dari Google Sheets.'
+      'Restore berhasil! <b>' + incoming.length + ' data barang</b> berhasil dimuat dari Google Sheets.'
     );
     showBarangPreview(BARANG);
-    toast('✅ Restore Data Barang dari Sheets berhasil!', 3000, 'success');
+    toast('Restore Data Barang dari Sheets berhasil!', 3000, 'success');
 
     if (document.getElementById('pg-barang').classList.contains('on')) renderBrg();
 
   } catch(err) {
     setBackupBrgStatus('error',
-      '❌ Restore gagal! ' + err.message +
+      'Restore gagal! ' + err.message +
       '<br><span style="font-size:11px;font-weight:400;opacity:0.8;">Cek URL, pastikan GAS sudah punya handler action=restoreBarang.</span>'
     );
     toast('Restore gagal: ' + err.message, 3500, 'error');
   } finally {
-    if (btnIco) btnIco.textContent = '⬇️';
+    if (btnIco) btnIco.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
   }
 }
 
@@ -3598,7 +3612,7 @@ function showGASGuide() {
 
 function copyGASCode() {
   navigator.clipboard.writeText(GAS_CODE).then(function() {
-    toast('✅ Kode GAS berhasil di-copy! Paste di Google Apps Script.', 3000, 'success');
+    toast('Kode GAS berhasil di-copy! Paste di Google Apps Script.', 3000, 'success');
   }).catch(function() {
     toast('Gagal copy. Silakan select manual dan copy.', 2500, 'error');
   });
@@ -3679,30 +3693,30 @@ function renderBossWidgets(strToday, strMonth) {
 
   el.style.display = 'block';
   el.innerHTML =
-    '<div style="font-size:11px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">📊 Ringkasan Hari Ini (Boss)</div>'+
+    '<div style="font-size:11px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Ringkasan Hari Ini (Boss)</div>'+
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px;">'+
-      _bw('💰','Omzet Hari Ini',fmtRp(omzetHari),'#3B82F6')+
-      _bw('📈','Profit',fmtRp(profitHari),profitHari>=0?'#10B981':'#EF4444')+
-      _bw('💸','Pengeluaran',fmtRp(keluarHari),'#F59E0B')+
-      _bw('⏳','Pending',pending.length+' nota','#8B5CF6')+
-      _bw('👤','Piutang',fmtRp(piutang),'#EF4444')+
+      _bw('<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 010-4h14v4"/><path d="M3 5v14a2 2 0 002 2h16v-5"/><path d="M18 12a2 2 0 000 4h4v-4z"/></svg>','Omzet Hari Ini',fmtRp(omzetHari),'#3B82F6')+
+      _bw('<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>','Profit',fmtRp(profitHari),profitHari>=0?'#10B981':'#EF4444')+
+      _bw('<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>','Pengeluaran',fmtRp(keluarHari),'#F59E0B')+
+      _bw('<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>','Pending',pending.length+' nota','#8B5CF6')+
+      _bw('<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>','Piutang',fmtRp(piutang),'#EF4444')+
     '</div>'+
     '<div class="card" style="padding:14px 16px;margin-bottom:16px;">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'+
-        '<span style="font-weight:800;font-size:13px;">🎯 Target Bulan</span>'+
+        '<span style="font-weight:800;font-size:13px;">Target Bulan</span>'+
         '<span style="font-size:11px;color:var(--tx2);">'+fmtRp(omzetBln)+' / '+fmtRp(target)+'</span>'+
       '</div>'+
       '<div style="background:var(--surf2);border-radius:99px;height:8px;overflow:hidden;">'+
         '<div style="height:100%;width:'+prog+'%;background:'+progCol+';border-radius:99px;transition:width 1s;"></div>'+
       '</div>'+
-      '<div style="font-size:11px;color:var(--tx3);margin-top:5px;">'+prog+'% tercapai'+(prog>=100?' 🎉':'')+
+      '<div style="font-size:11px;color:var(--tx3);margin-top:5px;">'+prog+'% tercapai'+(prog>=100?' — TERCAPAI':'')+
         (target-omzetBln>0&&prog<100?' — sisa '+fmtRp(target-omzetBln):'')+
       '</div>'+
     '</div>';
 }
 function _bw(ico, lbl, val, col) {
   return '<div class="card" style="padding:12px 14px;margin:0;border-top:3px solid var(--saffron);">'+
-    '<div style="font-size:16px;margin-bottom:3px;">'+ico+'</div>'+
+    '<div style="margin-bottom:5px;color:'+col+';">'+ico+'</div>'+
     '<div style="font-size:10px;font-weight:700;color:var(--tx3);margin-bottom:2px;">'+lbl+'</div>'+
     '<div style="font-size:14px;font-weight:900;color:'+col+';font-family:var(--mono);">'+val+'</div>'+
   '</div>';
@@ -3725,7 +3739,7 @@ function exportToCSV(data, filename) {
   a.download = (filename||'export') + '-' + nowDate() + '.csv';
   a.click();
   URL.revokeObjectURL(a.href);
-  toast('✅ CSV berhasil diunduh!', 2500, 'success');
+  toast('CSV berhasil diunduh!', 2500, 'success');
 }
 function exportTransaksiCSV() {
   var { trx } = getLaporanData();
@@ -3783,10 +3797,10 @@ function syncOfflineQueue() {
     if(!TRX.find(t=>t.id===item.trx.id)){ TRX.unshift(item.trx); added++; }
   });
   localStorage.removeItem(_OQ_KEY);
-  if(added>0){ saveData(); syncToSheets(true); toast('✅ '+added+' transaksi offline tersinkronkan!',3000,'success'); }
+  if(added>0){ saveData(); syncToSheets(true); toast(''+added+' transaksi offline tersinkronkan!',3000,'success'); }
 }
-window.addEventListener('online',  function(){ toast('🌐 Online! Menyinkronkan data...', 2000,'info'); setTimeout(syncOfflineQueue,1200); });
-window.addEventListener('offline', function(){ toast('📵 Offline — data tetap tersimpan lokal.',2500,'warning'); });
+window.addEventListener('online',  function(){ toast('Online! Menyinkronkan data...', 2000,'info'); setTimeout(syncOfflineQueue,1200); });
+window.addEventListener('offline', function(){ toast('Offline — data tetap tersimpan lokal.',2500,'warning'); });
 
 // ── F11: TEMPLATE WHATSAPP ───────────────────────────────────────
 var WA_TPL = {
@@ -3794,27 +3808,27 @@ var WA_TPL = {
     var items=(t.items||[]).map(i=>'▪️ '+i.barang+' x'+i.qty+' = '+fmtRp(i.total)).join('\n');
     return '🧾 *NOTA PESANAN — '+(TOKO.nama||'Toko')+'*\n\nID: *'+t.id+'*\nTanggal: '+t.tgl+
       '\nKasir: '+t.kasir+'\n\n📦 *PESANAN:*\n'+items+'\n\n💰 *Total: '+fmtRp(t.total)+'*\n'+
-      (t.sisa>0?'⚠️ Sisa: *'+fmtRp(t.sisa)+'*':'✅ Status: *LUNAS*')+'\n\nTerima kasih! 🙏';
+      (t.sisa>0?'Sisa: *'+fmtRp(t.sisa)+'*':'Status: *LUNAS*')+'\n\nTerima kasih! 🙏';
   },
   dp: function(t) {
     return '💳 *DP DITERIMA — '+(TOKO.nama||'Toko')+'*\n\nHalo *'+t.pelanggan+'*,\n'+
       'DP *'+fmtRp(t.dibayar)+'* sudah kami terima.\n📋 ID: '+t.id+
-      '\n💰 Total: '+fmtRp(t.total)+'\n⚠️ Sisa: *'+fmtRp(t.sisa)+'*\n\nTerima kasih! 🙏';
+      '\n💰 Total: '+fmtRp(t.total)+'\nSisa: *'+fmtRp(t.sisa)+'*\n\nTerima kasih! 🙏';
   },
   lunas: function(t) {
-    return '✅ *LUNAS — '+(TOKO.nama||'Toko')+'*\n\nHalo *'+t.pelanggan+'*,\n'+
+    return '*LUNAS — '+(TOKO.nama||'Toko')+'*\n\nHalo *'+t.pelanggan+'*,\n'+
       'Pembayaran *'+fmtRp(t.total)+'* sudah LUNAS.\n📋 ID: '+t.id+'\n\nTerima kasih! 🙏';
   },
   pending: function(t) {
     return '⏳ *PENDING — '+(TOKO.nama||'Toko')+'*\n\nHalo *'+t.pelanggan+'*,\n'+
-      'Pesanan *'+t.id+'* belum terbayar.\n⚠️ Sisa: *'+fmtRp(t.sisa)+'*\n\nMohon segera dibayar. 🙏';
+      'Pesanan *'+t.id+'* belum terbayar.\nSisa: *'+fmtRp(t.sisa)+'*\n\nMohon segera dibayar. 🙏';
   },
   ambil: function(t) {
     return '📦 *PESANAN SIAP — '+(TOKO.nama||'Toko')+'*\n\nHalo *'+t.pelanggan+'*,\n'+
       'Pesanan *'+t.id+'* sudah selesai dan siap diambil!\n\nSegera diambil ya, maks 7 hari. 🙏';
   },
   hutang: function(t) {
-    return '⚠️ *REMINDER TAGIHAN — '+(TOKO.nama||'Toko')+'*\n\nHalo *'+t.pelanggan+'*,\n'+
+    return '*REMINDER TAGIHAN — '+(TOKO.nama||'Toko')+'*\n\nHalo *'+t.pelanggan+'*,\n'+
       'Masih ada tagihan *'+fmtRp(t.sisa)+'* yang belum dilunasi.\n📋 ID: '+t.id+'\n\nMohon segera dilunasi. 🙏';
   }
 };
@@ -3961,7 +3975,7 @@ function kirimNotifWABoss(jenis, data) {
   var kasir = curUser ? curUser.nama : '-';
   var msgs = {
     'trx_masuk': `🛒 *TRANSAKSI MASUK — ${tokoNama}*\n\nKasir: ${kasir}\nPelanggan: ${data.pelanggan}\nTotal: *${fmtRp(data.total)}*\nStatus: ${data.bayar}\nWaktu: ${new Date().toLocaleTimeString('id-ID')}`,
-    'lunas'    : `✅ *PEMBAYARAN LUNAS — ${tokoNama}*\n\nKasir: ${kasir}\nPelanggan: ${data.pelanggan}\nID: ${data.id}\nTotal: *${fmtRp(data.total)}*`,
+    'lunas'    : `*PEMBAYARAN LUNAS — ${tokoNama}*\n\nKasir: ${kasir}\nPelanggan: ${data.pelanggan}\nID: ${data.id}\nTotal: *${fmtRp(data.total)}*`,
     'pending'  : `⏳ *PENDING — ${tokoNama}*\n\nPelanggan: ${data.pelanggan}\nID: ${data.id}\nSisa: *${fmtRp(data.sisa)}*`,
     'setoran'  : `💰 *LAPORAN SETORAN — ${tokoNama}*\n\nKasir: ${kasir}\nTotal Transaksi Hari Ini: *${fmtRp(data.total)}*\nWaktu: ${new Date().toLocaleString('id-ID')}`
   };
@@ -4003,7 +4017,7 @@ function renderPelangganEnhanced() {
   var html = PELANGGAN.map(function(p, i) {
     var sp = spending[p.nama] || { total:0, count:0 };
     var isLoyal = sp.count >= 3 || sp.total >= 1000000;
-    var loyalBadge = isLoyal ? '<span class="loyal-badge">⭐ Loyal</span>' : '';
+    var loyalBadge = isLoyal ? '<span class="loyal-badge">Loyal</span>' : '';
     return `<tr>
       <td style="font-weight:700">${p.nama} ${loyalBadge}</td>
       <td class="mono">${p.wa||'-'}</td>
@@ -4011,9 +4025,9 @@ function renderPelangganEnhanced() {
       <td style="color:var(--blue);font-weight:800">${fmtRp(sp.total)}</td>
       <td>${sp.count} nota</td>
       <td><div style="display:flex;gap:4px;flex-wrap:wrap">
-        <button class="btn btn-xs btn-ghost" onclick="lihatHistoriCustomer('${p.nama}')">📋 Histori</button>
-        <button class="btn btn-xs btn-wa" onclick="sendWA('${p.wa}','Halo ${p.nama}! 👋')">💬 WA</button>
-        <button class="btn btn-xs btn-red" onclick="hapusPelanggan(${i})">✕</button>
+        <button class="btn btn-xs btn-ghost" onclick="lihatHistoriCustomer('${p.nama}')">Histori</button>
+        <button class="btn btn-xs btn-wa" onclick="sendWA('${p.wa}','Halo ${p.nama}! 👋')">WA</button>
+        <button class="btn btn-xs btn-red" onclick="hapusPelanggan(${i})"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div></td>
     </tr>`;
   }).join('');
@@ -4037,13 +4051,13 @@ function initMultiMetode() {
   // Cari select metode di form POS yang sudah ada
   var selects = document.querySelectorAll('select[id*="metode"], select[id*="bayar-metode"]');
   var newOptions = `
-    <option value="Cash">💵 Cash</option>
-    <option value="Transfer">🏦 Transfer Bank</option>
-    <option value="QRIS">📱 QRIS</option>
-    <option value="OVO">💜 OVO</option>
-    <option value="Dana">💙 Dana</option>
-    <option value="ShopeePay">🧡 ShopeePay</option>
-    <option value="DP">💳 DP / Cicilan</option>`;
+    <option value="Cash">Cash</option>
+    <option value="Transfer">Transfer Bank</option>
+    <option value="QRIS">QRIS</option>
+    <option value="OVO">OVO</option>
+    <option value="Dana">Dana</option>
+    <option value="ShopeePay">ShopeePay</option>
+    <option value="DP">DP / Cicilan</option>`;
   selects.forEach(function(s) {
     if(s.options.length < 4) { // Only update if not already expanded
       s.innerHTML = newOptions;
@@ -4091,7 +4105,7 @@ function renderTableVirtual(data, headers, renderRow, containerId, pageSize) {
     var more  = data.length > slice.length
       ? `<tr><td colspan="${headers.length}" style="text-align:center;padding:12px;">
           <button class="btn btn-ghost btn-sm" onclick="this.closest('table').dispatchEvent(new Event('loadmore'))">
-            ➕ Tampilkan lebih banyak (${data.length-slice.length} tersisa)
+            Tampilkan lebih banyak (${data.length-slice.length} tersisa)
           </button></td></tr>` : '';
     el.innerHTML = `<table><thead>${thead}</thead><tbody>${rows}${more}</tbody></table>`;
     el.querySelector('table').addEventListener('loadmore', function(){ page++; renderPage(); }, {once:true});
@@ -4150,9 +4164,9 @@ function renderPendingOrder() {
       '<td style="font-weight:800;color:var(--blue-d);">' + fmtRp(t.total) + '</td>' +
       '<td>' + badgeBayar(t.bayar, t.sisa) + '<br><span style="font-size:11px;color:var(--red);font-weight:800;">Sisa: ' + fmtRp(t.sisa) + '</span></td>' +
       '<td><div style="display:flex;gap:4px;flex-wrap:wrap;">' +
-        '<button class="btn btn-green btn-xs" onclick="openPelunasanModal(\'' + t.id + '\')">✓ Lunas</button>' +
-        '<button class="btn btn-wa btn-xs" onclick="kirimWATemplate(\'' + t.id + '\',\'pending\')">📲 WA</button>' +
-        '<button class="btn btn-ghost btn-xs" onclick="showNota(\'' + t.id + '\')">🧾 Nota</button>' +
+        '<button class="btn btn-green btn-xs" onclick="openPelunasanModal(\'' + t.id + '\')">Lunas</button>' +
+        '<button class="btn btn-wa btn-xs" onclick="kirimWATemplate(\'' + t.id + '\',\'pending\')">WA</button>' +
+        '<button class="btn btn-ghost btn-xs" onclick="showNota(\'' + t.id + '\')">Nota</button>' +
       '</div></td>' +
     '</tr>';
   }).join('');
@@ -4198,7 +4212,7 @@ function updateTargetProgress() {
     '<div style="background:var(--surf2);border-radius:99px;height:12px;overflow:hidden;">' +
       '<div style="height:100%;width:' + prog + '%;background:' + col + ';border-radius:99px;transition:width 1.2s;"></div>' +
     '</div>' +
-    '<div style="font-size:12px;color:var(--tx2);margin-top:6px;font-weight:700;">' + prog + '% tercapai' + (prog >= 100 ? ' 🎉 TARGET TERCAPAI!' : ' — sisa ' + fmtRp(Math.max(0, sisa))) + '</div>';
+    '<div style="font-size:12px;color:var(--tx2);margin-top:6px;font-weight:700;">' + prog + '% tercapai' + (prog >= 100 ? ' — TARGET TERCAPAI!' : ' — sisa ' + fmtRp(Math.max(0, sisa))) + '</div>';
 }
 
 function updateBalikModal() {
@@ -4245,7 +4259,7 @@ function renderMesinList() {
         '<div style="font-size:11px;color:var(--tx3);">' + m.tgl + ' · ' + fmtRp(m.harga) + '</div>' +
         (m.ket ? '<div style="font-size:11px;color:var(--tx2);">' + m.ket + '</div>' : '') +
       '</div>' +
-      '<button class="btn btn-red btn-xs" onclick="hapusMesin(' + i + ')">✕</button>' +
+      '<button class="btn btn-red btn-xs" onclick="hapusMesin(' + i + ')"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
     '</div>';
   }).join('');
 }
@@ -4339,29 +4353,29 @@ function renderProduksi() {
   var cards = document.getElementById('produksi-cards');
   if(!cards) return;
   if(!filtered.length) {
-    cards.innerHTML = '<div class="empty-state"><div class="es-icon">🏭</div><div class="es-text">Tidak ada produksi ' + (_prodFilter === 'semua' ? '' : 'dengan status ini') + '</div></div>';
+    cards.innerHTML = '<div class="empty-state"><div class="es-icon"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 20h20"/><path d="M4 20V10l5 4v-4l5 4v-4l5 4v-7"/><path d="M4 10l3-3 3 3"/></svg></div><div class="es-text">Tidak ada produksi ' + (_prodFilter === 'semua' ? '' : 'dengan status ini') + '</div></div>';
     return;
   }
   var today = nowDate();
   cards.innerHTML = filtered.map(function(p) {
     var isOverdue = p.deadline && p.deadline < today && p.status !== 'selesai';
     var statusColor = p.status === 'selesai' ? '#10B981' : p.status === 'proses' ? '#3B82F6' : '#F59E0B';
-    var statusLabel = p.status === 'selesai' ? '✅ Selesai' : p.status === 'proses' ? '⚙️ Proses' : '⏳ Antrian';
+    var statusLabel = p.status === 'selesai' ? 'Selesai' : p.status === 'proses' ? 'Proses' : 'Antrian';
     return '<div class="card" style="margin:0;border-left:4px solid ' + statusColor + ';' + (isOverdue ? 'border-color:#EF4444;background:var(--red-l);' : '') + '">' +
       '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">' +
         '<div><div style="font-weight:900;font-size:14px;">' + p.jenis + '</div>' +
-          '<div style="font-size:12px;color:var(--tx2);">👤 ' + p.pelanggan + (p.pj ? ' · 👷 ' + p.pj : '') + '</div>' +
+          '<div style="font-size:12px;color:var(--tx2);">' + p.pelanggan + (p.pj ? ' · ' + p.pj : '') + '</div>' +
         '</div>' +
         '<span style="font-size:11px;font-weight:800;color:' + statusColor + ';background:rgba(0,0,0,0.05);padding:3px 9px;border-radius:99px;">' + statusLabel + '</span>' +
       '</div>' +
       (p.catatan ? '<div style="font-size:12px;color:var(--tx2);margin-bottom:10px;padding:8px;background:var(--surf2);border-radius:8px;">' + p.catatan + '</div>' : '') +
       '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">' +
-        '<div style="font-size:11px;color:' + (isOverdue ? 'var(--red)' : 'var(--tx3)') + ';font-weight:700;">' + (isOverdue ? '⚠️ Terlambat!' : '📅') + ' Deadline: ' + (p.deadline || '-') + '</div>' +
+        '<div style="font-size:11px;color:' + (isOverdue ? 'var(--red)' : 'var(--tx3)') + ';font-weight:700;">' + (isOverdue ? 'Terlambat! ' : '') + 'Deadline: ' + (p.deadline || '-') + '</div>' +
         '<div style="display:flex;gap:6px;">' +
-          (p.status !== 'proses' && p.status !== 'selesai' ? '<button class="btn btn-blue btn-xs" onclick="updateProdStatus(\'' + p.id + '\',\'proses\')">⚙️ Mulai</button>' : '') +
-          (p.status !== 'selesai' ? '<button class="btn btn-green btn-xs" onclick="updateProdStatus(\'' + p.id + '\',\'selesai\')">✅ Selesai</button>' : '') +
-          (p.trxId ? '<button class="btn btn-ghost btn-xs" onclick="showNota(\'' + p.trxId + '\')">🧾 Nota</button>' : '') +
-          '<button class="btn btn-red btn-xs" onclick="hapusProduksi(\'' + p.id + '\')">✕</button>' +
+          (p.status !== 'proses' && p.status !== 'selesai' ? '<button class="btn btn-blue btn-xs" onclick="updateProdStatus(\'' + p.id + '\',\'proses\')">Mulai</button>' : '') +
+          (p.status !== 'selesai' ? '<button class="btn btn-green btn-xs" onclick="updateProdStatus(\'' + p.id + '\',\'selesai\')">Selesai</button>' : '') +
+          (p.trxId ? '<button class="btn btn-ghost btn-xs" onclick="showNota(\'' + p.trxId + '\')">Nota</button>' : '') +
+          '<button class="btn btn-red btn-xs" onclick="hapusProduksi(\'' + p.id + '\')"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -4437,7 +4451,7 @@ function renderRekapKasir() {
       '<td>' + items + '</td>' +
       '<td style="font-weight:800;color:var(--blue-d);">' + fmtRp(t.total) + '</td>' +
       '<td>' + badgeBayar(t.bayar, t.sisa) + '</td>' +
-      '<td><button class="btn btn-ghost btn-xs" onclick="showNota(\'' + t.id + '\')">🧾 Nota</button></td>' +
+      '<td><button class="btn btn-ghost btn-xs" onclick="showNota(\'' + t.id + '\')">Nota</button></td>' +
     '</tr>';
   }).join('');
   var tbl = document.getElementById('rekap-kasir-tbl');
@@ -4506,7 +4520,7 @@ function downloadLaporanPDF() {
 var _currentTemplateNota = null;
 var NOTA_TEMPLATES = {
   nota_singkat: {
-    label: '🧾 Nota Singkat (Tanpa QRIS)',
+    label: 'Nota Singkat (Tanpa QRIS)',
     desc: 'Ringkasan pesanan tanpa info pembayaran',
     build: function(t) {
       var items = (t.items||[]).map(function(i){ return '▪️ ' + i.barang + ' x' + i.qty + ' = ' + fmtRp(i.total); }).join('\n');
@@ -4520,7 +4534,7 @@ var NOTA_TEMPLATES = {
     }
   },
   nota_bayar: {
-    label: '💳 Nota + Info Pembayaran',
+    label: 'Nota + Info Pembayaran',
     desc: 'Nota lengkap dengan rekening & QRIS',
     build: function(t) {
       var items = (t.items||[]).map(function(i){ return '▪️ ' + i.barang + ' x' + i.qty + ' = ' + fmtRp(i.total); }).join('\n');
@@ -4529,41 +4543,41 @@ var NOTA_TEMPLATES = {
         'ID: *' + t.id + '* | Tgl: ' + t.tgl + '\n👤 ' + t.pelanggan + '\n\n' +
         '📦 *PESANAN:*\n' + items + '\n\n' +
         '💰 *Total Tagihan: ' + fmtRp(t.total) + '*\n' +
-        (t.sisa > 0 ? '⚠️ *Sisa Bayar: ' + fmtRp(t.sisa) + '*\n\n' : '✅ *Status: LUNAS*\n\n') +
+        (t.sisa > 0 ? '*Sisa Bayar: ' + fmtRp(t.sisa) + '*\n\n' : '*Status: LUNAS*\n\n') +
         (t.sisa > 0 ? '💳 *CARA BAYAR:*\n' + rekWa + '\n\nAtau QRIS: ' + (TOKO.qrisLink||'') + '\n\n' : '') +
         'Terima kasih! 🙏';
     }
   },
   info_bayar_saja: {
-    label: '💰 Info Bayar Saja',
+    label: 'Info Bayar Saja',
     desc: 'Hanya sisa tagihan dan cara bayar',
     build: function(t) {
-      if(t.sisa <= 0) return '✅ Pesanan ini sudah LUNAS.';
+      if(t.sisa <= 0) return 'Pesanan ini sudah LUNAS.';
       var rekWa = (TOKO.rekening||[]).map(function(r){ return r.bank + ': ' + r.no + ' (' + r.an + ')'; }).join('\n');
       return 'Halo *' + t.pelanggan + '* 👋\n\n' +
         'Pesanan *' + t.id + '* masih ada sisa tagihan:\n\n' +
         '💰 Total: ' + fmtRp(t.total) + '\n' +
-        (t.bayar==='DP' ? '✅ Sudah DP: ' + fmtRp(t.dibayar||0) + '\n' : '') +
-        '⚠️ *SISA: ' + fmtRp(t.sisa) + '*\n\n' +
+        (t.bayar==='DP' ? 'Sudah DP: ' + fmtRp(t.dibayar||0) + '\n' : '') +
+        '*SISA: ' + fmtRp(t.sisa) + '*\n\n' +
         '💳 Pembayaran via:\n' + rekWa + '\n\nAtau QRIS: ' + (TOKO.qrisLink||'') + '\n\n_(Mohon kirim bukti transfer ya kak 🙏)_';
     }
   },
   siap_ambil: {
-    label: '📦 Pesanan Siap Diambil',
+    label: 'Pesanan Siap Diambil',
     desc: 'Notifikasi ke pelanggan bahwa pesanan sudah jadi',
     build: function(t) {
       return 'Halo *' + t.pelanggan + '*! 👋\n\n' +
-        '✅ Pesanan Anda *(' + t.id + ')* sudah *SELESAI* dan siap diambil!\n\n' +
-        (t.sisa > 0 ? '⚠️ Harap lunasi sisa pembayaran *' + fmtRp(t.sisa) + '* saat pengambilan.\n\n' : '') +
+        'Pesanan Anda *(' + t.id + ')* sudah *SELESAI* dan siap diambil!\n\n' +
+        (t.sisa > 0 ? 'Harap lunasi sisa pembayaran *' + fmtRp(t.sisa) + '* saat pengambilan.\n\n' : '') +
         '📍 Lokasi: ' + (TOKO.alamat || 'Abunawas Percetakan & Konveksi') + '\n' +
         '_Barang yang tidak diambil dalam 7 hari dianggap hilang._\n\nTerima kasih! 🙏';
     }
   },
   lunas_konfirmasi: {
-    label: '✅ Konfirmasi Lunas',
+    label: 'Konfirmasi Lunas',
     desc: 'Bukti pembayaran sudah lunas',
     build: function(t) {
-      return '✅ *PEMBAYARAN LUNAS*\n\n' +
+      return '*PEMBAYARAN LUNAS*\n\n' +
         'Halo *' + t.pelanggan + '*,\n' +
         'Pembayaran Anda sebesar *' + fmtRp(t.total) + '* sudah kami terima dengan lengkap!\n\n' +
         '📋 ID Nota: *' + t.id + '*\n📅 Tanggal: ' + t.tgl + '\n\nTerima kasih sudah mempercayakan pesanan Anda pada kami! 🙏';
@@ -4739,7 +4753,7 @@ function updateNotaVendorTeks() {
   var status = document.querySelector('input[name="mv_bayar"]:checked');
   var statusVal = status ? status.value : 'Lunas';
   var total = CART_VND.reduce(function(s,i){ return s + (i.qty * cleanRibuan(i.harga)); }, 0);
-  var statusLabel = statusVal === 'Lunas' ? '✅ Lunas' : statusVal === 'DP' ? '💛 DP' : '❌ Kasbon/Hutang';
+  var statusLabel = statusVal === 'Lunas' ? 'Lunas' : statusVal === 'DP' ? 'DP' : 'Kasbon/Hutang';
   var teks = '📦 *NOTA SINGKAT*\nVendor: ' + vendor + '\nJumlah Item: ' + CART_VND.length +
     '\nTotal: ' + fmtRp(total) + '\nStatus: ' + statusLabel;
   var existing = document.getElementById('nota-vendor-preview');
@@ -4770,7 +4784,7 @@ if(_origRenderSetting) {
             (TOKO.jenisProduksi || JENIS_PRODUKSI_DEFAULT).map(function(j, i) {
               return '<div style="display:flex;align-items:center;gap:6px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;padding:6px 10px;">' +
                 '<span style="font-size:12px;font-weight:700;">' + j + '</span>' +
-                '<button style="background:none;border:none;color:var(--red);cursor:pointer;font-size:12px;padding:0;" onclick="hapusJenisProd(' + i + ')">✕</button>' +
+                '<button style="background:none;border:none;color:var(--red);cursor:pointer;font-size:12px;padding:0;" onclick="hapusJenisProd(' + i + ')"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
               '</div>';
             }).join('') +
           '</div>' +

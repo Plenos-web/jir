@@ -1168,3 +1168,6 @@ canvas { border-radius: 8px; }
 }
 .katalog-item-card:hover { transform: translateY(-1px); box-shadow: var(--sh); }
 
+
+/* ══ LOADING SPINNER (ikon proses/sinkronisasi) ══ */
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }

@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════════════════
-   🧮 KALKULATOR PRODUKSI — BUGFIX SCRIPT
+   KALKULATOR PRODUKSI — BUGFIX SCRIPT
    File ini dimuat SETELAH script.js dan HANYA menangani halaman
    #pg-kalkulator (Tab Konveksi/HPP & Tab Banner/Spanduk).
    Semua ID/class di sini disinkronkan dengan index.html & style.css
@@ -143,7 +143,7 @@
       '<td><label>Subtotal (Rp)</label>' +
         '<span class="hpp-subtotal" style="font-weight:800;font-family:var(--mono);">Rp 0</span></td>' +
       '<td style="text-align:center;">' +
-        '<button type="button" class="btn btn-ghost btn-xs" onclick="hapusHPPRow(this)" title="Hapus komponen">🗑</button></td>';
+        '<button type="button" class="btn btn-ghost btn-xs" onclick="hapusHPPRow(this)" title="Hapus komponen"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>';
 
     tbody.appendChild(tr);
     hitungHPP();
@@ -314,14 +314,14 @@
     saveKalkulatorState();
   };
 
-  // 🗑 Hapus 1 item rekap
+  // Hapus 1 item rekap
   window.hapusBannerRekap = function (id) {
     bannerRekapList = bannerRekapList.filter(function (it) { return it.id !== id; });
     renderBannerRekap();
     saveKalkulatorState();
   };
 
-  // 🗑 Kosongkan semua rekap banner
+  // Kosongkan semua rekap banner
   window.clearBannerRekap = function () {
     if (bannerRekapList.length === 0) return;
     if (!confirm('Kosongkan semua data rekap banner?')) return;
@@ -346,19 +346,19 @@
     body.innerHTML = bannerRekapList.map(function (item) {
       grandTotal += item.totalAll;
       return '<tr class="bnr-rekap-row" data-id="' + item.id + '">' +
-        '<td data-label="📐 Ukuran: ">' + item.lebarM.toFixed(2) + ' x ' + item.tinggiM.toFixed(2) + ' m</td>' +
-        '<td data-label="📏 Luas: " style="text-align:center;">' + item.luas.toFixed(2) + ' m²</td>' +
-        '<td data-label="📦 Qty: " style="text-align:center;">' + item.qty + '</td>' +
-        '<td data-label="💰 Harga/m²: " style="text-align:right;">' + formatRupiah(item.harga) + '</td>' +
-        '<td data-label="💵 Total/Pcs: " style="text-align:right;">' + formatRupiah(item.totalPcs) + '</td>' +
-        '<td data-label="💵 Total: " style="text-align:right;font-weight:800;">' + formatRupiah(item.totalAll) + '</td>' +
-        '<td style="text-align:center;"><button type="button" class="btn btn-ghost btn-xs" onclick="hapusBannerRekap(\'' + item.id + '\')" title="Hapus">🗑</button></td>' +
+        '<td data-label="Ukuran: ">' + item.lebarM.toFixed(2) + ' x ' + item.tinggiM.toFixed(2) + ' m</td>' +
+        '<td data-label="Luas: " style="text-align:center;">' + item.luas.toFixed(2) + ' m²</td>' +
+        '<td data-label="Qty: " style="text-align:center;">' + item.qty + '</td>' +
+        '<td data-label="Harga/m²: " style="text-align:right;">' + formatRupiah(item.harga) + '</td>' +
+        '<td data-label="Total/Pcs: " style="text-align:right;">' + formatRupiah(item.totalPcs) + '</td>' +
+        '<td data-label="Total: " style="text-align:right;font-weight:800;">' + formatRupiah(item.totalAll) + '</td>' +
+        '<td style="text-align:center;"><button type="button" class="btn btn-ghost btn-xs" onclick="hapusBannerRekap(\'' + item.id + '\')" title="Hapus"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>' +
       '</tr>';
     }).join('');
 
     if (foot) {
       foot.innerHTML = '<tr>' +
-        '<td colspan="5" style="text-align:right;">💰 GRAND TOTAL</td>' +
+        '<td colspan="5" style="text-align:right;">GRAND TOTAL</td>' +
         '<td style="text-align:right;">' + formatRupiah(grandTotal) + '</td>' +
         '<td></td>' +
       '</tr>';
