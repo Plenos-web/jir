@@ -606,6 +606,7 @@ function showPage(id){
         document.getElementById('lbl-tarif-km').textContent = fmtRp(TOKO.ongkirKm); 
         updateIdCust(); 
         if(!currentEditTrxId) document.getElementById('fi-no-cetak').value = generateNoCetak();
+        applyOngkirToggle();
     }, 
     'transaksi':renderTrx, 'piutang':renderPiutang,
     'pengeluaran':function(){populateFiVnd(); populateKategoriPengeluaran(); renderPengeluaran(); renderCartVendor();}, 'hutang-pengeluaran':renderHutangPengeluaran, 'pelanggan':renderPelanggan,
@@ -704,6 +705,9 @@ function renderSetting() {
     document.getElementById('set-qris-img').value = TOKO.qrisImg || '';
     document.getElementById('set-qris-link').value = TOKO.qrisLink || '';
     document.getElementById('set-use-stok').checked = TOKO.useStok || false;
+    var ongkirToggle = document.getElementById('set-tampil-ongkir');
+    if(ongkirToggle) ongkirToggle.checked = TOKO.tampilOngkir !== false; // default true
+    applyOngkirToggle();
     
     let keyEl = document.getElementById('set-gemini-key');
     let statusEl = document.getElementById('ai-key-status');
@@ -718,6 +722,36 @@ function renderSetting() {
     renderSetKat();
     renderSetKatProduk();
     renderSetSatuan();
+}
+
+function applyOngkirToggle() {
+  var toggle = document.getElementById('set-tampil-ongkir');
+  var aktif = toggle ? toggle.checked : (TOKO.tampilOngkir !== false);
+  var wrap = document.getElementById('ongkir-wrap');
+  var note = document.getElementById('ongkir-note');
+  var diskonOnly = document.getElementById('diskon-only-wrap');
+  if(wrap) wrap.style.display = aktif ? '' : 'none';
+  if(note) note.style.display = aktif ? '' : 'none';
+  if(diskonOnly) diskonOnly.style.display = aktif ? 'none' : '';
+  if(!aktif) {
+    var ongkirEl = document.getElementById('fi-ongkir');
+    var jarakEl = document.getElementById('fi-jarak');
+    if(ongkirEl) ongkirEl.value = '';
+    if(jarakEl) jarakEl.value = '0';
+  }
+}
+
+/* Pay status selectable cards */
+function updatePayStatusCards(prefix) {
+  var val = document.querySelector('input[name="' + prefix + '_bayar"]:checked');
+  if(!val) return;
+  var v = val.value;
+  var map = { Hutang: 'psc-hutang', DP: 'psc-dp', Lunas: 'psc-lunas' };
+  Object.values(map).forEach(function(id) {
+    var el = document.getElementById(id);
+    if(el) el.classList.remove('active');
+  });
+  if(map[v]) { var el = document.getElementById(map[v]); if(el) el.classList.add('active'); }
 }
 
 function renderSetRek() {
@@ -823,6 +857,8 @@ function simpanSetting() {
     }
     TOKO.rekening = newRek;
     TOKO.ongkirKm = parseInt(document.getElementById('set-ongkir-km').value) || 2000;
+    var ongkirToggle = document.getElementById('set-tampil-ongkir');
+    if(ongkirToggle) TOKO.tampilOngkir = ongkirToggle.checked;
     
     let rawQrisImg = document.getElementById('set-qris-img').value.trim();
     if(rawQrisImg.includes('drive.google.com/file/d/')) {
@@ -903,7 +939,7 @@ function renderDash(){
     sc('Omzet Tersaring',fmtRp(omzet),'color:var(--blue-d)',fTrx.length+' Transaksi Nota','color:var(--tx2)','blue')+
     sc('Modal / Pengeluaran',fmtRp(modal),'color:var(--tx2)','Belanja Vendor & Operasional','color:var(--tx2)','green')+
     sc('Laba Kotor',fmtRp(laba),'color:var(--green-d)',omzet?'Profit Margin '+Math.round(laba/omzet*100)+'%':'—','color:var(--green)','green')+
-    sc('Piutang Pelanggan',fmtRp(piutang),'color:var(--red-d)',fTrx.filter(t=>t.sisa>0).length+' nota belum lunas','color:var(--red)','red')+
+    '<div onclick="showPage(\'pending\')" style="cursor:pointer;">' + sc('Piutang Pelanggan',fmtRp(piutang),'color:var(--red-d)',fTrx.filter(t=>t.sisa>0).length+' nota — klik lihat','color:var(--red)','red') + '</div>'+
     sc('Hutang Boss Keluar',fmtRp(hutangExp),'color:var(--red-d)',fExp.filter(v=>v.status==='Hutang').length+' tagihan belum bayar','color:var(--red)','amber');
 
   var rows=fTrx.slice(0,5).map(function(t){
@@ -980,6 +1016,7 @@ function editTrx(id) {
     else rHutang.checked = true;
 
     toggleDP('fi');
+    updatePayStatusCards('fi');
     renderCart();
     toast('Mode Edit diaktifkan untuk ' + id, 2500, 'warning');
 }
@@ -996,7 +1033,7 @@ function batalEditTrx() {
     document.getElementById('fi-harga').value='';
     document.getElementById('fi-jarak').value='0'; document.getElementById('fi-ongkir').value=''; document.getElementById('fi-diskon').value='';
     
-    document.querySelector('input[name="fi_bayar"][value="Lunas"]').checked = true; toggleDP('fi');
+    document.querySelector('input[name="fi_bayar"][value="Lunas"]').checked = true; toggleDP('fi'); updatePayStatusCards('fi'); applyOngkirToggle();
 
     CART = []; renderCart(); updateIdCust();
 }
@@ -2902,6 +2939,21 @@ var ocrImageBase64 = null;
 function handleOCRUpload(e) {
   var file = e.target.files[0];
   if (!file) return;
+  _loadOCRFile(file);
+}
+
+function handleOCRDrop(e) {
+  e.preventDefault();
+  document.getElementById('ocr-drop-zone').classList.remove('drag-over');
+  var file = e.dataTransfer.files[0];
+  if (!file) return;
+  if (!file.type.match(/image\/(jpeg|png|heic|heif)/i) && !file.type.startsWith('image/')) {
+    toast('Format tidak didukung. Gunakan JPG, PNG, atau HEIC.', 2500, 'error'); return;
+  }
+  _loadOCRFile(file);
+}
+
+function _loadOCRFile(file) {
   var reader = new FileReader();
   reader.onload = function(ev) {
     ocrImageBase64 = ev.target.result.split(',')[1];
@@ -2975,7 +3027,7 @@ function simpanDariOCR() {
 function resetOCR() {
   ocrImageBase64 = null;
   document.getElementById('ocr-file-input').value = '';
-  document.getElementById('ocr-drop-zone').style.display = 'block';
+  document.getElementById('ocr-drop-zone').style.display = 'flex';
   document.getElementById('ocr-preview').style.display = 'none';
   document.getElementById('ocr-result').style.display = 'none';
   document.getElementById('ocr-loading').style.display = 'none';
@@ -4235,8 +4287,31 @@ function renderPendingOrder() {
     '</tr>';
   }).join('');
 
+  // Mobile card list
+  var cards = pending.length ? pending.map(function(t) {
+    var items = (t.items||[]).map(function(i){ return i.barang + ' x' + i.qty; }).join(', ');
+    return '<div class="pending-card">' +
+      '<div class="pending-card-header">' +
+        '<div><div class="pending-card-name">' + t.pelanggan + '</div><div class="pending-card-id">' + t.id + ' · ' + t.tgl + '</div></div>' +
+        badgeBayar(t.bayar, t.sisa) +
+      '</div>' +
+      '<div class="pending-card-barang">' + items + '</div>' +
+      '<div class="pending-card-amounts">' +
+        '<div><div style="font-size:10px;color:var(--tx3)">Total</div><div class="pending-card-total">' + fmtRp(t.total) + '</div></div>' +
+        '<div><div style="font-size:10px;color:var(--tx3)">Sisa Bayar</div><div class="pending-card-sisa">' + fmtRp(t.sisa) + '</div></div>' +
+      '</div>' +
+      '<div class="pending-card-btns">' +
+        '<button class="btn btn-green" onclick="openPelunasanModal(\'' + t.id + '\')">✓ Lunas</button>' +
+        '<button class="btn btn-wa" onclick="kirimWATemplate(\'' + t.id + '\',\'pending\')">WA Kirim</button>' +
+        '<button class="btn btn-ghost" onclick="showNota(\'' + t.id + '\')">Nota</button>' +
+      '</div>' +
+    '</div>';
+  }).join('') : '<div style="text-align:center;padding:24px;color:var(--tx3);font-size:13px;">✅ Semua order sudah lunas!</div>';
+
   var tbl = document.getElementById('pending-tbl');
-  if(tbl) tbl.innerHTML = '<table><thead><tr><th>ID / Tgl</th><th>Pelanggan</th><th>Barang</th><th>Total</th><th>Status</th><th>Aksi</th></tr></thead><tbody>' + (rows || emptyRow(6, '✅', 'Semua order sudah lunas!')) + '</tbody></table>';
+  if(tbl) tbl.innerHTML =
+    '<table><thead><tr><th>ID / Tgl</th><th>Pelanggan</th><th>Barang</th><th>Total</th><th>Status</th><th>Aksi</th></tr></thead><tbody>' + (rows || emptyRow(6, '✅', 'Semua order sudah lunas!')) + '</tbody></table>' +
+    '<div class="pending-card-list">' + cards + '</div>';
 }
 
 function openPelunasanModal(id) {
@@ -4501,11 +4576,12 @@ function renderRekapKasir() {
   var piutang = data.filter(function(t){ return t.sisa > 0; }).reduce(function(s,t){ return s + t.sisa; }, 0);
 
   var statsEl = document.getElementById('rekap-kasir-stats');
-  if(statsEl) statsEl.innerHTML =
+  if(statsEl) { statsEl.innerHTML =
     sc('Total Transaksi', data.length + ' nota', 'color:var(--blue-d)', 'User: ' + user, 'color:var(--tx2)', 'blue') +
     sc('Omzet', fmtRp(omzet), 'color:var(--green-d)', 'Total nilai transaksi', 'color:var(--tx2)', 'green') +
     sc('Lunas', lunas + ' nota', 'color:var(--green-d)', 'Terbayar penuh', 'color:var(--tx2)', 'green') +
-    sc('Piutang', fmtRp(piutang), 'color:var(--red-d)', pending + ' nota pending', 'color:var(--tx2)', 'red');
+    '<div onclick="showPage(\'pending\')" style="cursor:pointer;">' + sc('Piutang', fmtRp(piutang), 'color:var(--red-d)', pending + ' nota pending — klik lihat', 'color:var(--tx2)', 'red') + '</div>';
+  }
 
   var rows = data.map(function(t) {
     var items = (t.items||[]).length > 0 ? t.items.length + ' item' : 'Pesanan';

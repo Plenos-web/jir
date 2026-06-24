@@ -1461,3 +1461,124 @@ table { max-width: 100%; }
 /* ── Filter bar select option Audit ── */
 .cp-filter-bar select { cursor: pointer; }
 
+
+/* ══════════════════════════════════════════════════
+   PAY STATUS SELECTABLE CARDS
+══════════════════════════════════════════════════ */
+.pay-status-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 4px;
+}
+.pay-status-card {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; padding: 12px 8px; border-radius: 10px; cursor: pointer;
+  border: 2px solid var(--bdr2); background: var(--surf2);
+  transition: all 0.18s; text-align: center; user-select: none;
+}
+.pay-status-card:hover { border-color: var(--bdr); background: var(--surf); }
+.psc-icon  { font-size: 18px; line-height: 1; }
+.psc-label { font-size: 12px; font-weight: 800; color: var(--tx); }
+.psc-desc  { font-size: 10px; color: var(--tx3); font-weight: 500; }
+
+.pay-status-card.ps-hutang.active { background: #FEF2F2; border-color: #EF4444; }
+.pay-status-card.ps-hutang.active .psc-label { color: #B91C1C; }
+.pay-status-card.ps-dp.active     { background: #FFFBEB; border-color: #F59E0B; }
+.pay-status-card.ps-dp.active     .psc-label { color: #92400E; }
+.pay-status-card.ps-lunas.active  { background: #ECFDF5; border-color: #10B981; }
+.pay-status-card.ps-lunas.active  .psc-label { color: #065F46; }
+
+/* ══════════════════════════════════════════════════
+   OCR UPLOAD BOX
+══════════════════════════════════════════════════ */
+.ocr-dropzone {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; padding: 28px 16px; min-height: 140px;
+  border: 2px dashed var(--bdr); border-radius: 14px;
+  background: var(--surf2); cursor: pointer; transition: all 0.2s;
+  text-align: center;
+}
+.ocr-dropzone:hover, .ocr-dropzone.drag-over {
+  border-color: var(--blue); background: var(--blue-l);
+}
+.ocr-drop-icon { color: var(--tx3); }
+.ocr-drop-title { font-weight: 700; font-size: 13px; color: var(--tx2); }
+.ocr-drop-sub   { font-size: 11px; color: var(--tx3); }
+.ocr-preview-wrap { text-align: center; }
+.ocr-preview-actions {
+  display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;
+}
+.ocr-preview-actions .btn-sm {
+  flex: 1; min-width: 80px; font-size: 12px;
+  padding: 9px 10px; border-radius: 8px;
+}
+
+/* ══════════════════════════════════════════════════
+   TOGGLE SWITCH
+══════════════════════════════════════════════════ */
+.toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--bdr2); border-radius: 24px; transition: 0.2s;
+}
+.toggle-slider::before {
+  content: ''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px;
+  background: white; border-radius: 50%; transition: 0.2s;
+}
+.toggle-switch input:checked + .toggle-slider { background: var(--blue); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+/* ══════════════════════════════════════════════════
+   PENDING ORDER — MOBILE CARD LIST
+══════════════════════════════════════════════════ */
+.pending-card-list { display: none; flex-direction: column; gap: 10px; }
+.pending-card {
+  background: var(--surf); border: 1px solid var(--bdr); border-radius: 10px;
+  padding: 12px 14px;
+}
+.pending-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.pending-card-name   { font-weight: 800; font-size: 14px; }
+.pending-card-id     { font-size: 10px; color: var(--tx3); font-family: var(--mono); }
+.pending-card-barang { font-size: 12px; color: var(--tx2); margin-bottom: 8px; }
+.pending-card-amounts { display: flex; gap: 14px; margin-bottom: 10px; }
+.pending-card-total  { font-size: 13px; font-weight: 800; color: var(--blue-d); }
+.pending-card-sisa   { font-size: 13px; font-weight: 800; color: var(--red); }
+.pending-card-btns   { display: flex; gap: 6px; flex-wrap: wrap; }
+.pending-card-btns .btn { flex: 1; min-width: 80px; font-size: 12px; padding: 8px 6px; }
+
+/* ══════════════════════════════════════════════════
+   MOBILE RESPONSIVE — GLOBAL
+══════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .g2, .g3, .g4, .g5 { grid-template-columns: 1fr !important; }
+  .g2-mobile-2 { grid-template-columns: 1fr 1fr !important; }
+  .pay-status-group { grid-template-columns: repeat(3,1fr); }
+
+  /* POS form full width */
+  #pg-input .field input, #pg-input .field select, #pg-input .field textarea { width: 100%; box-sizing: border-box; }
+
+  /* Vendor page */
+  #pg-vendor .g2, #pg-vendor .g3 { grid-template-columns: 1fr !important; }
+
+  /* Pending — show cards, hide table */
+  #pending-tbl table { display: none; }
+  .pending-card-list { display: flex; }
+
+  /* Tabel jadi card-list: general table scroll */
+  .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Tombol utama di HP full width */
+  .btn-full-mobile { width: 100% !important; }
+
+  /* Padding konsisten */
+  .main { padding: 12px !important; }
+  .card { padding: 14px !important; }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+  /* Tablet 2-col */
+  .g3, .g4 { grid-template-columns: 1fr 1fr !important; }
+  .g5 { grid-template-columns: repeat(3,1fr) !important; }
+}
