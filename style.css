@@ -558,7 +558,7 @@ tr:hover td { background: var(--cream2); }
 .av-kasir { background: var(--sage); }
 
 /* ══ TOPBAR ══ */
-#pg-app { display: none; flex-direction: column; min-height: 100vh; }
+#pg-app { display: none; flex-direction: column; height: 100vh; overflow: hidden; }
 
 .topbar {
   height: 56px;
@@ -632,7 +632,7 @@ tr:hover td { background: var(--cream2); }
 }
 
 /* ══ SIDEBAR ══ */
-.app-body { display: flex; flex: 1; min-height: calc(100vh - 56px); }
+.app-body { display: flex; flex: 1; min-height: 0; overflow: hidden; }
 
 .sidebar {
   width: 230px; min-width: 230px;
@@ -1171,3 +1171,252 @@ canvas { border-radius: 8px; }
 
 /* ══ LOADING SPINNER (ikon proses/sinkronisasi) ══ */
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+
+/* ══════════════════════════════════════════
+   UI POLISH TAHAP 3 — PATCH
+══════════════════════════════════════════ */
+
+/* ── Shortcut Bar ── */
+.shortcut-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 20px;
+  background: var(--surf);
+  border-bottom: 1px solid var(--bdr);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  flex-shrink: 0;
+}
+.shortcut-bar::-webkit-scrollbar { display: none; }
+
+.sc-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--bdr);
+  background: var(--surf2);
+  color: var(--tx2);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--fn);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.16s;
+  flex-shrink: 0;
+}
+.sc-pill:hover {
+  background: var(--saffron-l);
+  border-color: rgba(212,146,15,0.3);
+  color: var(--saffron-d);
+}
+.sc-pill svg { flex-shrink: 0; }
+
+/* ── Shortcut bar is sibling of app-body (outside flex row) ── */
+.shortcut-bar {
+  flex-shrink: 0;
+}
+/* app-body-inner placeholder - not used */
+.app-body-inner {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Dashboard charts full width on mobile ── */
+@media (max-width: 900px) {
+  .dash-charts-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .dash-charts-grid .card {
+    margin: 0;
+  }
+  .shortcut-bar {
+    padding: 7px 12px;
+  }
+  .sc-pill {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+}
+
+/* ── Audit Trail — toned-down version ── */
+#pg-audit {
+  --cp-cyan: #4878D8;
+  --cp-green: #3A8060;
+  --cp-red: #C04040;
+  --cp-amber: #C86020;
+  background: var(--surf2);
+  border-radius: 16px;
+}
+.cp-header {
+  background: var(--surf) !important;
+  border-bottom: 1px solid var(--bdr) !important;
+  border-radius: 16px 16px 0 0;
+}
+.cp-header::before { display: none !important; }
+.cp-title {
+  font-family: var(--fn) !important;
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  color: var(--tx) !important;
+  letter-spacing: -0.3px !important;
+}
+.cp-subtitle { color: var(--tx3) !important; font-family: var(--fn) !important; }
+.cp-badge-owner {
+  background: var(--amber-l) !important;
+  border-color: rgba(200,96,32,0.25) !important;
+  color: var(--amber-d) !important;
+  font-family: var(--fn) !important;
+}
+.cp-stats-bar { margin-top: 12px; }
+.cp-stat {
+  background: var(--surf2) !important;
+  border-color: var(--bdr) !important;
+}
+.cp-stat-val { color: var(--blue-d) !important; }
+.cp-stat-lbl { color: var(--tx3) !important; font-family: var(--fn) !important; }
+.cp-filter-bar {
+  background: var(--surf) !important;
+  border-color: var(--bdr) !important;
+}
+.cp-input {
+  background: var(--surf2) !important;
+  border-color: var(--bdr) !important;
+  color: var(--tx) !important;
+  font-family: var(--fn) !important;
+}
+.cp-input:focus { border-color: var(--blue) !important; box-shadow: 0 0 0 3px rgba(72,120,216,0.12) !important; }
+.cp-select {
+  background: var(--surf2) !important;
+  border-color: var(--bdr) !important;
+  color: var(--tx) !important;
+  font-family: var(--fn) !important;
+}
+.cp-btn {
+  border-color: var(--bdr) !important;
+  color: var(--tx2) !important;
+  font-family: var(--fn) !important;
+  background: var(--surf2) !important;
+}
+.cp-btn:hover { background: var(--surf) !important; }
+.cp-btn-export { border-color: rgba(58,128,96,0.3) !important; color: var(--green-d) !important; }
+.cp-btn-danger { border-color: rgba(192,64,64,0.3) !important; color: var(--red-d) !important; }
+.cp-log-list { padding: 14px 20px; }
+.cp-log-card {
+  background: var(--surf) !important;
+  border-color: var(--bdr) !important;
+  border-left-color: var(--blue) !important;
+}
+.cp-log-card:hover { background: var(--surf2) !important; }
+.cp-log-card.act-CREATE   { border-left-color: var(--green) !important; }
+.cp-log-card.act-UPDATE   { border-left-color: var(--blue) !important; }
+.cp-log-card.act-DELETE   { border-left-color: var(--red) !important; }
+.cp-log-card.act-LOGIN    { border-left-color: var(--purple) !important; }
+.cp-log-card.act-LOGOUT   { border-left-color: var(--tx3) !important; }
+.cp-log-card.act-EXPORT   { border-left-color: var(--amber) !important; }
+.cp-log-card.act-PELUNASAN{ border-left-color: var(--green) !important; }
+.cp-log-who  { color: var(--tx) !important; font-family: var(--fn) !important; }
+.cp-log-desc { color: var(--tx2) !important; }
+.cp-log-time { color: var(--tx3) !important; font-family: var(--mono) !important; }
+.cp-log-time b { color: var(--tx2) !important; }
+.cp-empty { color: var(--tx3) !important; font-family: var(--fn) !important; }
+.badge-CREATE    { background: var(--green-l) !important; color: var(--green-d) !important; border-color: rgba(42,96,73,0.2) !important; }
+.badge-UPDATE    { background: var(--blue-l) !important; color: var(--blue-d) !important; border-color: rgba(37,88,204,0.2) !important; }
+.badge-DELETE    { background: var(--red-l) !important; color: var(--red-d) !important; border-color: rgba(184,48,48,0.2) !important; }
+.badge-LOGIN     { background: var(--purple-l) !important; color: var(--purple) !important; border-color: rgba(104,48,168,0.2) !important; }
+.badge-LOGOUT    { background: var(--surf2) !important; color: var(--tx3) !important; border-color: var(--bdr) !important; }
+.badge-EXPORT    { background: var(--amber-l) !important; color: var(--amber-d) !important; border-color: rgba(200,96,32,0.2) !important; }
+.badge-PELUNASAN { background: var(--green-l) !important; color: var(--green-d) !important; border-color: rgba(42,96,73,0.2) !important; }
+#mo-audit-detail .modal {
+  background: var(--surf) !important;
+  border-color: var(--bdr) !important;
+  color: var(--tx) !important;
+  font-family: var(--fn) !important;
+}
+#mo-audit-detail .modal-t { color: var(--tx) !important; }
+.cp-detail-key { color: var(--tx3) !important; }
+.cp-detail-val { color: var(--tx) !important; }
+.cp-detail-row { border-color: var(--bdr) !important; }
+.cp-diff-panel {
+  background: var(--surf2) !important;
+  border-color: var(--bdr) !important;
+}
+.cp-diff-panel.before { border-top-color: var(--red) !important; }
+.cp-diff-panel.after  { border-top-color: var(--green) !important; }
+.cp-diff-lbl.before { color: var(--red-d) !important; }
+.cp-diff-lbl.after  { color: var(--green-d) !important; }
+
+/* Audit filter select option text color fix */
+.cp-filter-bar select option { color: #1C1C28; background: #fff; }
+[data-theme="dark"] .cp-filter-bar select option { color: #E4E2F0; background: #1A1A24; }
+
+/* ── Kalkulator Produksi Mobile ── */
+@media (max-width: 900px) {
+  #hpp-table tbody td label { display: block; }
+  #bnr-rekap-tbl tbody td::before { display: inline-block; min-width: 90px; }
+  .sim-box { padding: 10px 12px !important; }
+  #pg-kalkulator .btn-full { width: 100% !important; }
+}
+
+/* ── Card konsistensi ── */
+.card {
+  border-radius: var(--rxl);
+  box-shadow: var(--sh-card);
+}
+.card-t {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--tx);
+  letter-spacing: -0.3px;
+  margin-bottom: 16px;
+}
+
+/* ── Responsive global no-scroll fix ── */
+* { box-sizing: border-box; }
+body, html { overflow-x: hidden; }
+.page { overflow-x: hidden !important; }
+img, canvas { max-width: 100%; }
+table { max-width: 100%; }
+
+/* ── Shortcut bar is positioned outside app-body, no layout change needed ── */
+/* Sidebar overlay not needed on desktop */
+@media (min-width: 901px) {
+  .sidebar-overlay { display: none !important; }
+}
+
+
+/* ── Vendor Payment Summary (inline ringkasan DP/Hutang) ── */
+.vendor-pay-summary {
+  margin-top: 8px;
+  background: var(--amber-l);
+  border: 1px solid rgba(200,96,32,0.2);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+}
+.vps-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(200,96,32,0.1);
+  gap: 8px;
+}
+.vps-row:last-child { border-bottom: none; }
+.vps-row span { color: var(--tx3); font-weight: 600; }
+.vps-row strong { color: var(--tx); font-weight: 700; }
+.vps-total { color: var(--amber-d) !important; }
+.vps-paid  { color: var(--green-d) !important; }
+.vps-sisa  { color: var(--red) !important; }
+
+/* ── Login page badge - remove AI tag ── */
+.login-container .badge-ai { display: none; }
+
+/* ── Filter bar select option Audit ── */
+.cp-filter-bar select { cursor: pointer; }
+

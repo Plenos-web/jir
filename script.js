@@ -174,7 +174,7 @@ var MENUS = {
     {id:'pending',label:'Order Pending',ico:'clock'},
     {id:'produksi',label:'Produksi',ico:'calc'},
     {id:'target',label:'Target & Catatan Boss',ico:'chart'},
-    {sec:'AI & Tools'},
+    {sec:'Tools & Analitik'},
     {id:'aiadvisor',label:'Advisor Keuangan',ico:'ai'},
     {id:'ocr',label:'Foto Nota OCR',ico:'camera'},
     {id:'voice',label:'Voice Input',ico:'mic'},
@@ -1441,12 +1441,27 @@ function renderPengeluaran(){
     if (v.status === 'DP') tagihanHtml += `<br><span style="font-size:10px;color:var(--amber-d)">DP: ${fmtRp(v.dibayar)}</span><br><span style="font-size:10px;color:var(--red)">Sisa: ${fmtRp(v.sisa)}</span>`;
     if (v.status === 'Hutang') tagihanHtml += `<br><span style="font-size:10px;color:var(--red)">Sisa: ${fmtRp(v.sisa !== undefined ? v.sisa : v.total)}</span>`;
 
+    // Vendor payment summary card for DP/Hutang
+    let summaryHtml = '';
+    if (isHutang) {
+      let sisaVal = v.sisa !== undefined ? v.sisa : v.total;
+      let dbyrVal = v.dibayar || 0;
+      summaryHtml = `<div class="vendor-pay-summary">
+        <div class="vps-row"><span>Vendor</span><strong>${v.vendor||'-'}</strong></div>
+        <div class="vps-row"><span>Total</span><strong class="vps-total">${fmtRp(v.total)}</strong></div>
+        <div class="vps-row"><span>Sudah Dibayar</span><strong class="vps-paid">${fmtRp(dbyrVal)}</strong></div>
+        <div class="vps-row"><span>Sisa</span><strong class="vps-sisa">${fmtRp(sisaVal)}</strong></div>
+      </div>`;
+    }
+
+    let waVndBtn = (v.vendor) ? `<button class="btn btn-wa btn-xs" onclick="waVendorPembayaran(${i})">WA</button>` : '';
+
     return `<tr><td class="mono">${v.id}<br><span style="font-size:10px;color:var(--tx3)">${v.tgl}</span></td>
-      <td style="font-weight:600">${v.ket}${ketExtra}</td>
+      <td style="font-weight:600">${v.ket}${ketExtra}${summaryHtml}</td>
       <td><span class="badge bg-gray">${v.kategori}</span></td>
       <td style="font-weight:800;color:var(--amber-d)">${tagihanHtml}</td>
       <td>${badgeBayar(v.status)}</td>
-      <td><div style="display:flex; gap:6px; flex-wrap:wrap;">${isHutang?`<button class="btn btn-green btn-xs" onclick="lunasPengeluaran(${i})">Tandai Lunas</button>`:''}${delBtn}</div></td></tr>`;
+      <td><div style="display:flex; gap:6px; flex-wrap:wrap;">${isHutang?`<button class="btn btn-green btn-xs" onclick="lunasPengeluaran(${i})">Tandai Lunas</button>`:''}${waVndBtn}${delBtn}</div></td></tr>`;
   }).join('');
   document.getElementById('pengeluaran-tbl').innerHTML=`<table><thead><tr><th>ID / Tgl</th><th>Rangkuman Nota</th><th>Kategori</th><th>Total Tagihan</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${rows||emptyRow(6,'📦','Belum ada data pengeluaran')}</tbody></table>`;
 }
@@ -1455,6 +1470,19 @@ function lunasPengeluaran(i){
     PENGELUARAN[i].dibayar = PENGELUARAN[i].total;
     PENGELUARAN[i].sisa = 0;
     saveData(); renderPengeluaran(); toast('Tagihan belanja sudah dibayar!', 2500, 'success'); 
+}
+
+function waVendorPembayaran(i) {
+  var v = PENGELUARAN[i];
+  if (!v) return;
+  var sisaVal = v.sisa !== undefined ? v.sisa : v.total;
+  var dbyrVal = v.dibayar || 0;
+  var msg = `Halo Kak ${v.vendor||'Vendor'},\n\nBerikut ringkasan pembayaran dari Abunawas Percetakan:\n\nID: ${v.id}\nKeperluan: ${v.ket}\nTanggal: ${v.tgl}\n\nTotal: ${fmtRp(v.total)}\nSudah Dibayar: ${fmtRp(dbyrVal)}\nSisa: *${fmtRp(sisaVal)}*\nStatus: ${v.status}\n\nTerima kasih!`;
+  var waNum = '';
+  var vFound = VENDORS.find(function(vn){ return vn.nama === v.vendor; });
+  if (vFound && vFound.kontak) waNum = vFound.kontak.replace(/\D/g,'');
+  if (waNum) { window.open('https://wa.me/62'+waNum.replace(/^0/,'')+'?text='+encodeURIComponent(msg),'_blank'); }
+  else { navigator.clipboard && navigator.clipboard.writeText(msg).then(function(){ toast('Pesan vendor disalin ke clipboard!', 2500, 'info'); }).catch(function(){ toast('Tidak ada nomor WA vendor. Pesan disalin.', 2500, 'warning'); }); }
 }
 
 /* ════════════════ HUTANG & DATA LAINNYA ════════════════ */
