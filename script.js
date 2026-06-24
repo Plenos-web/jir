@@ -2000,11 +2000,15 @@ function buildNotaCustomer(t) {
       </div>
     </div>
 
-    <div class="nota-acts" id="nota-action-buttons">
-      <button class="btn btn-blue nota-btn" onclick="kirimNotaTeks()">Kirim Nota Teks</button>
-      <button class="btn btn-green nota-btn" onclick="kirimNotaGambar()">Nota Gambar</button>
-      <button class="btn btn-amber nota-btn" onclick="tampilkanInfoPembayaran()">Info Pembayaran</button>
-      <button class="btn btn-ghost nota-btn" onclick="kirimPDF()">Download PDF</button>
+    <div class="nota-acts nota-acts-nota" id="nota-action-buttons">
+      <div class="nota-acts-row nota-acts-primary">
+        <button class="btn btn-blue nota-btn" onclick="kirimNotaTeks()">Kirim Nota Teks</button>
+        <button class="btn btn-green nota-btn" onclick="kirimNotaGambar()">Nota Gambar</button>
+      </div>
+      <div class="nota-acts-row nota-acts-secondary">
+        <button class="btn btn-amber nota-btn" onclick="tampilkanInfoPembayaran()">Info Pembayaran</button>
+        <button class="btn btn-ghost nota-btn" onclick="kirimPDF()">Download PDF</button>
+      </div>
     </div>
   `;
 }
@@ -2017,13 +2021,13 @@ function buildInfoPembayaran(t) {
       <div class="info-rek-no">${r.no}</div>
       <div class="info-rek-an">${r.an}</div>
     </div>
-  `).join('');
+  `).join('') || '<div class="info-rek-empty">Belum ada rekening terdaftar</div>';
 
   return `
     <div class="info-pembayaran-wrap">
       <div class="info-header">
         <div class="info-title">INFO PEMBAYARAN</div>
-        <div class="info-subtitle">Abunawas Percetakan & Konveksi</div>
+        <div class="info-subtitle">Abunawas Percetakan &amp; Konveksi</div>
       </div>
 
       <div class="info-body">
@@ -2035,52 +2039,84 @@ function buildInfoPembayaran(t) {
           <div class="info-row sisa"><span>Sisa Bayar</span><span class="val red">${fmtRp(t.sisa)}</span></div>
         </div>
 
-        <div class="info-section-title">Pilihan Metode Pembayaran</div>
+        <div class="info-section-title">Pilih Metode Pembayaran</div>
 
-        <div class="info-metode-grid">
-          <div class="info-metode-card cash">
-            <div class="metode-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <div class="info-metode-grid" id="info-metode-grid">
+          <button class="info-metode-card cash active" onclick="pilihMetodePembayaran('cash')">
+            <div class="metode-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/></svg></div>
             <div class="metode-name">Cash</div>
-            <div class="metode-desc">Bayar langsung di toko</div>
-          </div>
-          <div class="info-metode-card transfer">
+            <div class="metode-desc">Bayar di toko</div>
+          </button>
+          <button class="info-metode-card transfer" onclick="pilihMetodePembayaran('transfer')">
             <div class="metode-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="21" x2="21" y2="21"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="5 6 12 3 19 6"/><line x1="4" y1="10" x2="4" y2="21"/><line x1="20" y1="10" x2="20" y2="21"/></svg></div>
             <div class="metode-name">Transfer Bank</div>
-            <div class="metode-desc">Ke rekening berikut</div>
-          </div>
-          <div class="info-metode-card qris">
-            <div class="metode-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
+            <div class="metode-desc">Via rekening</div>
+          </button>
+          <button class="info-metode-card qris" onclick="pilihMetodePembayaran('qris')">
+            <div class="metode-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/><rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/></svg></div>
             <div class="metode-name">QRIS</div>
-            <div class="metode-desc">Scan QR di bawah</div>
+            <div class="metode-desc">Scan QR code</div>
+          </button>
+        </div>
+
+        <div id="metode-content-cash" class="metode-content">
+          <div class="metode-detail-box cash-detail">
+            <div class="metode-detail-icon">🏪</div>
+            <div class="metode-detail-title">Bayar Langsung ke Kasir</div>
+            <div class="metode-detail-desc">Silakan datang ke toko dan bayar tunai ke kasir kami. Tunjukkan nota ini kepada kasir.</div>
+            <div class="metode-detail-amount">Sisa: ${fmtRp(t.sisa)}</div>
           </div>
         </div>
 
-        <div class="info-section-title">Rekening Bank</div>
-        <div class="info-rek-list">${rekListHtml}</div>
-
-        <div class="info-section-title">QRIS</div>
-        <div class="info-qris-box">
-          <img src="${TOKO.qrisImg}" alt="QRIS" onerror="this.parentElement.innerHTML='<div class=\\'qris-error\\'>Gambar QRIS tidak tersedia</div>'">
-          <div class="info-qris-note">Scan dengan aplikasi e-wallet atau mobile banking</div>
+        <div id="metode-content-transfer" class="metode-content" style="display:none">
+          <div class="info-section-label">Rekening Tujuan</div>
+          <div class="info-rek-list">${rekListHtml}</div>
+          <div class="info-instruksi">
+            Transfer tepat <strong>${fmtRp(t.sisa)}</strong> lalu kirim bukti ke kasir.
+          </div>
         </div>
 
-        <div class="info-instruksi">
-          <strong>Instruksi:</strong><br>
-          1. Pilih metode pembayaran yang diinginkan<br>
-          2. Transfer sesuai nominal sisa tagihan<br>
-          3. Kirim bukti pembayaran ke kasir
+        <div id="metode-content-qris" class="metode-content" style="display:none">
+          <div class="info-section-label">Scan QRIS Berikut</div>
+          <div class="info-qris-box">
+            <img src="${TOKO.qrisImg}" alt="QRIS" onerror="this.parentElement.innerHTML='<div class=\\'qris-error\\'>Gambar QRIS belum diatur. Silakan upload di Pengaturan Toko.</div>'">
+            <div class="info-qris-note">Scan dengan e-wallet atau mobile banking</div>
+          </div>
+          <div class="info-instruksi">
+            Scan QR, bayar <strong>${fmtRp(t.sisa)}</strong>, lalu kirim bukti ke kasir.
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="nota-acts" id="info-action-buttons">
-      <button class="btn btn-blue nota-btn" onclick="kirimInfoBayarTeks()">Info Bayar Teks</button>
-      <button class="btn btn-green nota-btn" onclick="kirimInfoBayarGambar()">Info Bayar Gambar</button>
-      <button class="btn btn-ghost nota-btn" onclick="kirimQRISSaja()">Kirim QRIS</button>
-      <button class="btn btn-amber nota-btn" onclick="kirimRekeningSaja()">Kirim Rekening</button>
-      <button class="btn btn-ghost nota-btn" onclick="tampilkanNotaCustomer()">← Kembali ke Nota</button>
+    <div class="nota-acts nota-acts-pay" id="info-action-buttons">
+      <div class="nota-acts-row nota-acts-primary">
+        <button class="btn btn-blue nota-btn" onclick="kirimInfoBayarTeks()">Info Pembayaran</button>
+        <button class="btn btn-green nota-btn" onclick="pilihMetodePembayaran('qris')">Lihat QRIS</button>
+      </div>
+      <div class="nota-acts-row nota-acts-secondary">
+        <button class="btn btn-amber nota-btn" onclick="kirimRekeningSaja()">Kirim Rekening</button>
+        <button class="btn btn-ghost nota-btn" onclick="kirimQRISSaja()">Kirim QRIS</button>
+      </div>
+      <div class="nota-acts-row nota-acts-back">
+        <button class="btn btn-ghost nota-btn nota-btn-back" onclick="tampilkanNotaCustomer()">← Kembali ke Nota</button>
+      </div>
     </div>
   `;
+}
+
+function pilihMetodePembayaran(metode) {
+  // Update tab active state
+  var cards = document.querySelectorAll('#info-metode-grid .info-metode-card');
+  cards.forEach(function(card) { card.classList.remove('active'); });
+  var activeCard = document.querySelector('#info-metode-grid .info-metode-card.' + metode);
+  if(activeCard) activeCard.classList.add('active');
+
+  // Show/hide content panels
+  var panels = document.querySelectorAll('.metode-content');
+  panels.forEach(function(p) { p.style.display = 'none'; });
+  var activePanel = document.getElementById('metode-content-' + metode);
+  if(activePanel) activePanel.style.display = 'block';
 }
 
 function tampilkanInfoPembayaran() {
